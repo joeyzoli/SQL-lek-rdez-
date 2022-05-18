@@ -343,7 +343,7 @@ public class SQL_lekerdezo
 		}
 	}
 	
-	class Megnyitas implements ActionListener															//megniytó osztály
+	class Megnyitas implements ActionListener																		//megnyitó osztály
 	{
 		public void actionPerformed(ActionEvent e)
 		 {
@@ -352,36 +352,33 @@ public class SQL_lekerdezo
 				if (e.getSource() == megnyit) 
 				{
 					osszefuzott = "";
-					int returnVal = fc.showOpenDialog(frame);											//fájl megniytásának adbalak megnyit
+					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
 					String sor;
 		 
 					if (returnVal == JFileChooser.APPROVE_OPTION) 
 					{
-						File file = fc.getSelectedFile();												//fájl változó megkpja azt a fájlt amit kiválsztottunk a filechooserrel
+						File file = fc.getSelectedFile();															//fájl változó megkpja azt a fájlt amit kiválsztottunk a filechooserrel
 						
-						measureTime(true);
-		            	FileInputStream fis = new FileInputStream(file);
-		            	XSSFWorkbook workbook = new XSSFWorkbook(fis);  
-		            	//Workbook workbook = WorkbookFactory.create(new FileInputStream("./inputFile.xls"));
-		            	//DataFormatter formatter = new DataFormatter();
-		            	//FormulaEvaluator evaluator =  workbook.getCreationHelper().createFormulaEvaluator();
+						measureTime(true);																			//időmérő indítása
+		            	FileInputStream fis = new FileInputStream(file);											//inputstream osztály példányosítása
+		            	XSSFWorkbook workbook = new XSSFWorkbook(fis);  											//excel osztály létráhozása a beolvasott fájlal
 		            	XSSFSheet sheet = workbook.getSheetAt(0);
-		            	Iterator<Row> itr = sheet.iterator();    //iterating over excel file  
+		            	Iterator<Row> itr = sheet.iterator();    													//interator példányosítása 
 						
 		            	while (itr.hasNext())                 
 		            	{  
 			            	Row row = itr.next();  
-			            	Iterator<Cell> cellIterator = row.cellIterator();   //iterating over each column  
+			            	Iterator<Cell> cellIterator = row.cellIterator();   									//iterating over each column  
 			            	while (cellIterator.hasNext())   
 			            	{  
 			            		Cell cell = cellIterator.next();
-			            		osszefuzott += ("\"" + cell.getStringCellValue() +"\",");						//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
+			            		osszefuzott += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
 			            		
 			            	}  
 			            	 
 		            	}  
 		
-		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 1);						//az utolsó vessző levágása a stringről
+		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 1);							//az utolsó vessző levágása a stringről
 		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
 						
 					} 
@@ -414,23 +411,15 @@ public class SQL_lekerdezo
 		      
 		      //Preparing a CallableStatement to call a procedure
 		      CallableStatement cstmt = con.prepareCall("{call videoton.veas_avm_csomagolt(?)}");									//tárolt eljárás meghívása
-		      //PreparedStatement stmt = con.prepareStatement("call videoton.veas_avmheti_teszt()");
-		      //stmt.execute();
-		      //cstmt.execute();
-		      //System.out.println("Stored Procedure executed successfully");
+		     
 		      cstmt.setString(1, osszefuzott);																						//tárolt eljárás paparméterénk megadása
 		      System.out.println("Kapcsolódás ideje: " + (measureTime(false) / 1000000) + "ms");
 		      measureTime(true);
 		      cstmt.execute();																										//sql lejkérdezés futtatása
 		      System.out.println("Az SQL lekérdezésének ideje: " + (measureTime(false) / 1000000) + "ms");
-		      //Setting the value for the TN parameter
-		      //cstmt.setInt(0, 0);
-		      //ResultSet rs = cstmt.executeQuery();
+		      
 		      System.out.println("Stored Procedure executed successfully");
 		      
-		      //Statement statement = con.createStatement();
-
-				//ResultSet result = statement.executeQuery("call videoton.veas_avmheti_teszt()");
 				ResultSet result2 = cstmt.getResultSet();																			//az sql lekérdezés tartalmát odaadja egy result set változónak
 
 				XSSFWorkbook workbook = new XSSFWorkbook();																			//excel tipusú osztály létrehjozása
@@ -453,16 +442,26 @@ public class SQL_lekerdezo
 			catch (SQLException e1) 
 			{
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (EncryptedDocumentException e1) {
+				String hibauzenet = e1.toString();  
+                JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
+			} 
+			catch (EncryptedDocumentException e1) 
+			{
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (FileNotFoundException e1) {
+				String hibauzenet = e1.toString();  
+                JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
+			} 
+			catch (FileNotFoundException e1) 
+			{
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
+				String hibauzenet = e1.toString();  
+                JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
+			} 
+			catch (IOException e1) 
+			{
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				String hibauzenet = e1.toString();  
+                JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
 			}
 			}
 			
@@ -481,12 +480,13 @@ public class SQL_lekerdezo
 		
 	}
 
-	private void Excelbeiro(ResultSet result, XSSFWorkbook workbook, 									//tábla tartalmát feltöltő metódus
+	private void Excelbeiro(ResultSet result, XSSFWorkbook workbook, 													//tábla tartalmát feltöltő metódus
 			XSSFSheet sheet) throws SQLException 
 	{
 		int rowCount = 1;
 
-		while (result.next()) {
+		while (result.next()) 
+		{
 			
 			String panel = result.getString("panel");
 			
