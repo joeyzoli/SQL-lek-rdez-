@@ -124,24 +124,15 @@ public class SQL_lekerdezo
 		      
 		      //Preparing a CallableStatement to call a procedure
 		      CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//tárolt eljárás meghívása
-		      //PreparedStatement stmt = con.prepareStatement("call videoton.veas_avmheti_teszt()");
-		      //stmt.execute();
-		      //cstmt.execute();
-		      //System.out.println("Stored Procedure executed successfully");
+		      
 		      cstmt.setString(1, osszefuzott);																						//tárolt eljárás paparméterénk megadása
 		      measureTime(true);
 		      cstmt.execute();																										//sql lejkérdezés futtatása
 		      
 		      System.out.println("Az SQL lekérdezésének ideje: " + (measureTime(false) / 1000000) + "ms");
 		      
-		      //Setting the value for the TN parameter
-		      //cstmt.setInt(0, 0);
-		      //ResultSet rs = cstmt.executeQuery();
 		      System.out.println("Stored Procedure executed successfully");
 		      
-		      //Statement statement = con.createStatement();
-
-				//ResultSet result = statement.executeQuery("call videoton.veas_avmheti_teszt()");
 				ResultSet result2 = cstmt.getResultSet();																			//az sql lekérdezés tartalmát odaadja egy result set változónak
 
 				XSSFWorkbook workbook = new XSSFWorkbook();																			//excel tipusú osztály létrehjozása
@@ -151,13 +142,13 @@ public class SQL_lekerdezo
 
 				writeDataLines(result2, workbook, sheet);																			//tábla tartalmát beírja	
 
-				FileOutputStream outputStream = new FileOutputStream("c:\\Users\\kovacs.zoltan\\Desktop\\teszt mappa\\hibás_panelek.xlsx");				//file tipusú változó létrehozása a megadott helyen
+				FileOutputStream outputStream = new FileOutputStream("c:\\Users\\kovacs.zoltan\\Desktop\\hibás_panelek.xlsx");		//file tipusú változó létrehozása a megadott helyen
 				workbook.write(outputStream);																						//adatok kiírása egy fájlba amit elöbb megadtunk
 				workbook.close();																									//adatofolyam lezárása
 				outputStream.close();																								//fájl lezárása
 
 				//statement.close();
-				JOptionPane.showMessageDialog(null, "SQL lekérdezés kész", "Tájékoztató Üzenet", 1);		//String összefűzés végén  végén megjelenő üzenet
+				JOptionPane.showMessageDialog(null, "SQL lekérdezés kész", "Tájékoztató Üzenet", 1);								//String összefűzés végén  végén megjelenő üzenet
 		     
 			}
 			 
@@ -380,7 +371,7 @@ public class SQL_lekerdezo
 		
 		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 1);							//az utolsó vessző levágása a stringről
 		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
-						
+		            	System.out.println("Összefűzott panelek száma: " + osszefuzott.length());
 					} 
 					
 		 
@@ -429,7 +420,7 @@ public class SQL_lekerdezo
 
 				Excelbeiro(result2, workbook, sheet);																			//tábla tartalmát beírja	
 
-				FileOutputStream outputStream = new FileOutputStream("c:\\Users\\kovacs.zoltan\\Desktop\\teszt mappa\\csomagolt_panelek.xlsx");				//file tipusú változó létrehozása a megadott helyen
+				FileOutputStream outputStream = new FileOutputStream("c:\\Users\\kovacs.zoltan\\Desktop\\csomagolt_panelek.xlsx");				//file tipusú változó létrehozása a megadott helyen
 				workbook.write(outputStream);																						//adatok kiírása egy fájlba amit elöbb megadtunk
 				workbook.close();																									//adatofolyam lezárása
 				outputStream.close();																								//fájl lezárása
