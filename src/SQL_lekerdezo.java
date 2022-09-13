@@ -49,8 +49,12 @@ public class SQL_lekerdezo
 	private JFileChooser fc;
 	private String osszefuzott;
 	private JButton megnyit;
+	private JButton mentes;
+	private JButton reszleges;
 	private File megnyitottfajl;
+	private File menteshelye;
 	private static Long timer_start;
+	private JButton like;
 
 	/**
 	 * Launch the application.
@@ -90,30 +94,51 @@ public class SQL_lekerdezo
 		frame.setTitle("SQL kereső");
 		
 		JButton start = new JButton("Start");
-		start.setBounds(164, 182, 89, 23);
+		start.setBounds(51, 110, 89, 23);
 		start.addActionListener(new SQLKereses());
 		frame.getContentPane().add(start);
 		
 		megnyit = new JButton("Fájl megnyitás");
 		megnyit.addActionListener(new Megnyitas());
-		megnyit.setBounds(164, 37, 89, 23);
+		megnyit.setBounds(51, 37, 89, 23);
 		
 		fc = new JFileChooser();
 		
 		frame.getContentPane().add(megnyit);
 		
 		JButton csomagolt = new JButton("Csomagolt");
-		csomagolt.setBounds(164, 110, 89, 23);
+		csomagolt.setBounds(289, 110, 89, 23);
 		csomagolt.addActionListener(new SQLKeresesCsomagolt());
 		frame.getContentPane().add(csomagolt);
+		
+		mentes = new JButton("Mentés helye");
+		mentes.setBounds(289, 37, 89, 23);
+		mentes.addActionListener(new Mentes());
+		frame.getContentPane().add(mentes);
+		
+		reszleges = new JButton("Részleges panel");
+		reszleges.setBounds(164, 37, 89, 23);
+		reszleges.addActionListener(new Reszlegessen());
+		frame.getContentPane().add(reszleges);
+		
+		like = new JButton("Like");
+		like.setBounds(164, 110, 89, 23);
+		like.addActionListener(new ReszlegesKereses());
+		frame.getContentPane().add(like);
 	}
 	
 	class SQLKereses implements ActionListener																						//kereső gom megnoymáskor hívodik meg
 	{
 		public void actionPerformed(ActionEvent e)
 		 {
+			
 			try 
 			{
+				if(menteshelye == null)
+				{
+					JOptionPane.showMessageDialog(null, "Nincs kiválasztva a mentés helye", "Hiba üzenet", 2);
+					return;
+				}
 				//Registering the Driver
 				DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghívása
 				
@@ -142,7 +167,7 @@ public class SQL_lekerdezo
 
 				writeDataLines(result2, workbook, sheet);																			//tábla tartalmát beírja	
 
-				FileOutputStream outputStream = new FileOutputStream("c:\\Users\\kovacs.zoltan\\Desktop\\hibás_panelek.xlsx");		//file tipusú változó létrehozása a megadott helyen
+				FileOutputStream outputStream = new FileOutputStream(menteshelye);		//file tipusú változó létrehozása a megadott helyen
 				workbook.write(outputStream);																						//adatok kiírása egy fájlba amit elöbb megadtunk
 				workbook.close();																									//adatofolyam lezárása
 				outputStream.close();																								//fájl lezárása
@@ -155,16 +180,99 @@ public class SQL_lekerdezo
 			catch (SQLException e1) 
 			{
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+				
 			} catch (EncryptedDocumentException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+				
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+				
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+				
+			}
+			}
+		 
+	}
+	
+	class ReszlegesKereses implements ActionListener																						//kereső gom megnoymáskor hívodik meg
+	{
+		public void actionPerformed(ActionEvent e)
+		 {
+			try 
+			{
+				if(menteshelye == null)
+				{
+					JOptionPane.showMessageDialog(null, "Nincs kiválasztva a mentés helye", "Hiba üzenet", 2);
+					return;
+				}
+				//Registering the Driver
+				DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghívása
+				
+		      //Getting the connection
+		      String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcíméhez való csatlakozás
+		      Connection con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszó felhasználó névvel
+		      System.out.println("Connection established......");
+		      
+		      //Preparing a CallableStatement to call a procedure
+		      CallableStatement cstmt = con.prepareCall("{call videoton.veas_reszleges_panelszam(?)}");									//tárolt eljárás meghívása
+		      
+		      cstmt.setString(1, osszefuzott);																						//tárolt eljárás paparméterénk megadása
+		      measureTime(true);
+		      cstmt.execute();																										//sql lejkérdezés futtatása
+		      
+		      System.out.println("Az SQL lekérdezésének ideje: " + (measureTime(false) / 1000000) + "ms");
+		      
+		      System.out.println("Stored Procedure executed successfully");
+		      
+				ResultSet result2 = cstmt.getResultSet();																			//az sql lekérdezés tartalmát odaadja egy result set változónak
+
+				XSSFWorkbook workbook = new XSSFWorkbook();																			//excel tipusú osztály létrehjozása
+				XSSFSheet sheet = workbook.createSheet("Eredmények");																//excel osztályban egy tábla létrehozása a megadott névvel
+
+				writeHeaderLine(sheet);																								//fejlécet lekészítő metódus meghívása
+
+				writeDataLines(result2, workbook, sheet);																			//tábla tartalmát beírja	
+
+				FileOutputStream outputStream = new FileOutputStream(menteshelye);		//file tipusú változó létrehozása a megadott helyen
+				workbook.write(outputStream);																						//adatok kiírása egy fájlba amit elöbb megadtunk
+				workbook.close();																									//adatofolyam lezárása
+				outputStream.close();																								//fájl lezárása
+
+				//statement.close();
+				JOptionPane.showMessageDialog(null, "SQL lekérdezés kész", "Tájékoztató Üzenet", 1);								//String összefűzés végén  végén megjelenő üzenet
+		     
+			}
+			 
+			catch (SQLException e1) 
+			{
+				// TODO Auto-generated catch block
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+				
+			} catch (EncryptedDocumentException e1) {
+				// TODO Auto-generated catch block
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+				
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+				
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+				
 			}
 			}
 			
@@ -372,6 +480,62 @@ public class SQL_lekerdezo
 		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 1);							//az utolsó vessző levágása a stringről
 		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
 		            	System.out.println("Összefűzott panelek száma: " + osszefuzott.length());
+		            	System.out.println(osszefuzott);
+					} 
+					
+		 
+				}
+				//System.out.println(osszefuzott);
+				JOptionPane.showMessageDialog(null, "Összefűzés kész", "Tájékoztató Üzenet", 1);		//String összefűzés végén  végén megjelenő üzenet
+			}
+			catch(IOException e1)
+			{
+				JOptionPane.showMessageDialog(null, "Olvasási hiba történt", "Hibaüzenet", 2);
+			}
+		 }		
+	}
+	
+	class Reszlegessen implements ActionListener																		//megnyitó osztály
+	{
+		public void actionPerformed(ActionEvent e)
+		 {
+			try
+			{
+				if (e.getSource() == reszleges) 
+				{
+					osszefuzott = "";
+					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
+					
+					//fc.setCurrentDirectory(System.getProperty("user.home"));
+					String sor;
+		 
+					if (returnVal == JFileChooser.APPROVE_OPTION) 
+					{
+						File file = fc.getSelectedFile();															//fájl változó megkpja azt a fájlt amit kiválsztottunk a filechooserrel
+						
+						measureTime(true);																			//időmérő indítása
+		            	FileInputStream fis = new FileInputStream(file);											//inputstream osztály példányosítása
+		            	XSSFWorkbook workbook = new XSSFWorkbook(fis);  											//excel osztály létráhozása a beolvasott fájlal
+		            	XSSFSheet sheet = workbook.getSheetAt(0);
+		            	Iterator<Row> itr = sheet.iterator();    													//interator példányosítása 
+						
+		            	while (itr.hasNext())                 
+		            	{  
+			            	Row row = itr.next();  
+			            	Iterator<Cell> cellIterator = row.cellIterator();   									//iterating over each column  
+			            	while (cellIterator.hasNext())   
+			            	{  
+			            		Cell cell = cellIterator.next();
+			            		osszefuzott += ("panel like \"" + cell.getStringCellValue() +"%\" or ");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
+			            		
+			            	}  
+			            	 
+		            	}  
+		
+		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 3);							//az utolsó vessző levágása a stringről
+		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
+		            	System.out.println("Összefűzott panelek száma: " + osszefuzott.length());
+		            	System.out.println(osszefuzott);
 					} 
 					
 		 
@@ -420,7 +584,7 @@ public class SQL_lekerdezo
 
 				Excelbeiro(result2, workbook, sheet);																			//tábla tartalmát beírja	
 
-				FileOutputStream outputStream = new FileOutputStream("c:\\Users\\kovacs.zoltan\\Desktop\\csomagolt_panelek.xlsx");				//file tipusú változó létrehozása a megadott helyen
+				FileOutputStream outputStream = new FileOutputStream(menteshelye);				//file tipusú változó létrehozása a megadott helyen
 				workbook.write(outputStream);																						//adatok kiírása egy fájlba amit elöbb megadtunk
 				workbook.close();																									//adatofolyam lezárása
 				outputStream.close();																								//fájl lezárása
@@ -517,4 +681,32 @@ public class SQL_lekerdezo
 		}
 	}
 	
+	class Mentes implements ActionListener																	//megnyitó osztály
+	{
+		public void actionPerformed(ActionEvent e)
+		 {
+			
+		 
+			try
+			{
+				if (e.getSource() == mentes) 
+				{
+					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
+					String sor;
+		 
+					if (returnVal == JFileChooser.APPROVE_OPTION) 
+					{
+						menteshelye = fc.getSelectedFile();															//fájl változó megkpja azt a fájlt amit kiválsztottunk a filechooserrel
+					}
+				}
+				
+			}
+			catch (Exception e1) 
+			{
+				// TODO Auto-generated catch block
+				String hibauzenet = e1.toString();  
+                JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
+			}
+		 }
+	}
 }
