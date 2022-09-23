@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -89,7 +90,9 @@ public class SQL_lekerdezo
 	{
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
+		frame.setPreferredSize(new Dimension(1024, 768));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setLayout(null);
 		frame.setTitle("SQL kereső");
 		
