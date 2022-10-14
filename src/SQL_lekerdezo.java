@@ -2,28 +2,17 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
@@ -32,16 +21,17 @@ import javax.swing.JFileChooser;
 import org.apache.poi.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-
-import com.mysql.cj.jdbc.result.ResultSetMetaData;
+import com.spire.data.table.DataTable;
+import com.spire.data.table.common.JdbcAdapter;
+import com.spire.xls.ExcelVersion;
+import com.spire.xls.Workbook;
+import com.spire.xls.Worksheet;
 
 public class SQL_lekerdezo 
 {
@@ -52,10 +42,10 @@ public class SQL_lekerdezo
 	private JButton megnyit;
 	private JButton mentes;
 	private JButton reszleges;
-	private File megnyitottfajl;
 	private File menteshelye;
 	private static Long timer_start;
 	private JButton like;
+	private XSSFWorkbook workbook;
 
 	/**
 	 * Launch the application.
@@ -162,20 +152,65 @@ public class SQL_lekerdezo
 		      System.out.println("Stored Procedure executed successfully");
 		      
 				ResultSet result2 = cstmt.getResultSet();																			//az sql lekérdezés tartalmát odaadja egy result set változónak
-
-				XSSFWorkbook workbook = new XSSFWorkbook();																			//excel tipusú osztály létrehjozása
+				
+				workbook = new XSSFWorkbook();																			//excel tipusú osztály létrehjozása
 				XSSFSheet sheet = workbook.createSheet("Eredmények");																//excel osztályban egy tábla létrehozása a megadott névvel
-
+				
 				writeHeaderLine(sheet);																								//fejlécet lekészítő metódus meghívása
 
 				writeDataLines(result2, workbook, sheet);																			//tábla tartalmát beírja	
-
+				
+				sheet.autoSizeColumn(0);
+				sheet.autoSizeColumn(2);
+				sheet.autoSizeColumn(3);
+				sheet.autoSizeColumn(4);
+				sheet.autoSizeColumn(5);
+				sheet.autoSizeColumn(6);
+				sheet.autoSizeColumn(7);
+				sheet.autoSizeColumn(8);
+				sheet.autoSizeColumn(9);
+				sheet.autoSizeColumn(10);
+				sheet.autoSizeColumn(11);
+				sheet.autoSizeColumn(12);
+				sheet.autoSizeColumn(13);
+				sheet.autoSizeColumn(14);
+				sheet.autoSizeColumn(15);
+				sheet.autoSizeColumn(16);
+				sheet.autoSizeColumn(17);
+				sheet.autoSizeColumn(18);
+				sheet.autoSizeColumn(19);
+				sheet.autoSizeColumn(20);
+				sheet.lockAutoFilter(true);
+				
 				FileOutputStream outputStream = new FileOutputStream(menteshelye);		//file tipusú változó létrehozása a megadott helyen
 				workbook.write(outputStream);																						//adatok kiírása egy fájlba amit elöbb megadtunk
 				workbook.close();																									//adatofolyam lezárása
 				outputStream.close();																								//fájl lezárása
-
+				
 				//statement.close();
+				/*
+				DataTable datatable = new DataTable();
+				Workbook workbook2 = new Workbook();
+				JdbcAdapter jdbcAdapter = new JdbcAdapter();
+				result2.next();
+	            jdbcAdapter.fillDataTable(datatable, result2);
+	            
+		        //Get the first worksheet
+		        Worksheet sheet2 = workbook2.getWorksheets().get(0);
+		        sheet2.insertDataTable(datatable, true, 1, 1);
+		        sheet2.getAutoFilters().setRange(sheet2.getCellRange("A1:Z1"));
+		        sheet2.getAllocatedRange().autoFitColumns();
+		        sheet2.getAllocatedRange().autoFitRows();
+		        
+		        sheet2.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+		        
+		        File fajl = new File(menteshelye.getName());																//file tipusú változó létrehozása a megadott helyen
+		        workbook2.saveToFile(fajl.getName(), ExcelVersion.Version2016);
+		        result2.close();
+		        cstmt.close();
+		        con.close();
+		        JOptionPane.showMessageDialog(null, "Mentés sikeres", "Info", 1);
+				*/
 				JOptionPane.showMessageDialog(null, "SQL lekérdezés kész", "Tájékoztató Üzenet", 1);								//String összefűzés végén  végén megjelenő üzenet
 		     
 			}
@@ -191,7 +226,9 @@ public class SQL_lekerdezo
 				String hibauzenet2 = e1.toString();
 				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
 				
-			} catch (FileNotFoundException e1) {
+			}
+			
+			catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				String hibauzenet2 = e1.toString();
 				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
@@ -201,6 +238,11 @@ public class SQL_lekerdezo
 				String hibauzenet2 = e1.toString();
 				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
 				
+			}
+			catch (Exception e1) 
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 			}
 		 
@@ -240,12 +282,15 @@ public class SQL_lekerdezo
 
 				XSSFWorkbook workbook = new XSSFWorkbook();																			//excel tipusú osztály létrehjozása
 				XSSFSheet sheet = workbook.createSheet("Eredmények");																//excel osztályban egy tábla létrehozása a megadott névvel
+				
 
 				writeHeaderLine(sheet);																								//fejlécet lekészítő metódus meghívása
 
 				writeDataLines(result2, workbook, sheet);																			//tábla tartalmát beírja	
-
-				FileOutputStream outputStream = new FileOutputStream(menteshelye);		//file tipusú változó létrehozása a megadott helyen
+				
+				sheet.autoSizeColumn(0);
+				sheet.setAutoFilter(CellRangeAddress.valueOf("A1:T1000000"));
+				FileOutputStream outputStream = new FileOutputStream(menteshelye);													//file tipusú változó létrehozása a megadott helyen
 				workbook.write(outputStream);																						//adatok kiírása egy fájlba amit elöbb megadtunk
 				workbook.close();																									//adatofolyam lezárása
 				outputStream.close();																								//fájl lezárása
@@ -285,66 +330,93 @@ public class SQL_lekerdezo
 	{
 
 		Row headerRow = sheet.createRow(0);
+		
+		CellStyle style = workbook.createCellStyle();					//Create style
+	    Font font = workbook.createFont();								//Create font
+	    font.setBold(true);												//Make font bold
+	    style.setFont(font);											//set it to bold
 
 		Cell headerCell = headerRow.createCell(0);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Azonosító");
+		
 
 		headerCell = headerRow.createCell(1);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("hely");
 
 		headerCell = headerRow.createCell(2);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Idő");
 
 		headerCell = headerRow.createCell(3);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Panel");
 
 		headerCell = headerRow.createCell(4);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Ok");
 		
 		headerCell = headerRow.createCell(5);
-		headerCell.setCellValue("Hibakód");
+		headerCell.setCellStyle(style);
+		headerCell.setCellValue("Leírás");
 		
 		headerCell = headerRow.createCell(6);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Alsor");
 		
 		headerCell = headerRow.createCell(7);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Kód2");
 		
 		headerCell = headerRow.createCell(8);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Szériaszám");
 		
 		headerCell = headerRow.createCell(9);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Tesztszám");
 		
 		headerCell = headerRow.createCell(10);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Pozició");
 		
 		headerCell = headerRow.createCell(11);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Teljesszám");
 		
 		headerCell = headerRow.createCell(12);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Teszt kezdete");
 		
 		headerCell = headerRow.createCell(13);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Teszt vége");
 		
 		headerCell = headerRow.createCell(14);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Hibakód");
 		
 		headerCell = headerRow.createCell(15);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Error");
 		
 		headerCell = headerRow.createCell(16);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Mért érték");
 		
 		headerCell = headerRow.createCell(17);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Dolgozó");
 		
 		headerCell = headerRow.createCell(18);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Név");
 		
 		headerCell = headerRow.createCell(19);
+		headerCell.setCellStyle(style);
 		headerCell.setCellValue("Megnevezés");
+	
 	}
 
 	private void writeDataLines(ResultSet result, XSSFWorkbook workbook, 									//tábla tartalmát feltöltő metódus
@@ -352,7 +424,8 @@ public class SQL_lekerdezo
 	{
 		int rowCount = 1;
 
-		while (result.next()) {
+		while (result.next()) 
+		{
 			String Azonosito = result.getString("azon");
 			String hely = result.getString("hely");
 			String Ido = result.getString("ido");
@@ -373,9 +446,6 @@ public class SQL_lekerdezo
 			String dolgozo = result.getString("dolgozo");
 			String nev = result.getString("nev");
 			String megnev = result.getString("megnev");
-			//float rating = result.getFloat("alsor");
-			//Timestamp timestamp = result.getTimestamp("ido");
-			//String comment = result.getString("alsor");
 
 			Row row = sheet.createRow(rowCount++);
 
@@ -443,6 +513,7 @@ public class SQL_lekerdezo
 			cell = row.createCell(columnCount++);
 
 		}
+		
 	}
 	
 	class Megnyitas implements ActionListener																		//megnyitó osztály
@@ -483,7 +554,7 @@ public class SQL_lekerdezo
 		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 1);							//az utolsó vessző levágása a stringről
 		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
 		            	System.out.println("Összefűzott panelek száma: " + osszefuzott.length());
-		            	System.out.println(osszefuzott);
+		            	//System.out.println(osszefuzott);
 					} 
 					
 		 

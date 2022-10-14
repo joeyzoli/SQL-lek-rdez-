@@ -21,5 +21,7 @@
 	<classpathentry kind="lib" path="C:/Users/kovacs.zoltan/eclipse-workspace/SQL/poi ooxml 4.0/poi-ooxml-4.0.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/kovacs.zoltan/eclipse-workspace/SQL/poi ooxml 4.0/poi-ooxml-schemas-4.0.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/kovacs.zoltan/eclipse-workspace/SQL/poi ooxml 4.0/xmlbeans-3.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kovacs.zoltan/eclipse-workspace/SQL/ojdbc11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/kovacs.zoltan/eclipse-workspace/SQL/Spire.Xls.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
