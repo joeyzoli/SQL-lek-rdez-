@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
+import org.apache.commons.compress.utils.Iterators;
 import org.apache.poi.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -33,12 +34,16 @@ import com.spire.xls.ExcelVersion;
 import com.spire.xls.Workbook;
 import com.spire.xls.Worksheet;
 
+
+
 public class SQL_lekerdezo 
 {
 
 	private JFrame frame;
 	private JFileChooser fc;
 	private String osszefuzott;
+	private String osszefuzott2;
+	private String osszefuzott3 ="";
 	private JButton megnyit;
 	private JButton mentes;
 	private JButton reszleges;
@@ -123,8 +128,7 @@ public class SQL_lekerdezo
 	class SQLKereses implements ActionListener																						//kereső gom megnoymáskor hívodik meg
 	{
 		public void actionPerformed(ActionEvent e)
-		 {
-			
+		 {		
 			try 
 			{
 				if(menteshelye == null)
@@ -132,120 +136,18 @@ public class SQL_lekerdezo
 					JOptionPane.showMessageDialog(null, "Nincs kiválasztva a mentés helye", "Hiba üzenet", 2);
 					return;
 				}
-				//Registering the Driver
-				DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghívása
-				
-		      //Getting the connection
-		      String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcíméhez való csatlakozás
-		      Connection con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszó felhasználó névvel
-		      System.out.println("Connection established......");
-		      
-		      //Preparing a CallableStatement to call a procedure
-		      CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//tárolt eljárás meghívása
-		      
-		      cstmt.setString(1, osszefuzott);																						//tárolt eljárás paparméterénk megadása
-		      measureTime(true);
-		      cstmt.execute();																										//sql lejkérdezés futtatása
-		      
-		      System.out.println("Az SQL lekérdezésének ideje: " + (measureTime(false) / 1000000) + "ms");
-		      
-		      System.out.println("Stored Procedure executed successfully");
-		      
-				ResultSet result2 = cstmt.getResultSet();																			//az sql lekérdezés tartalmát odaadja egy result set változónak
-				
-				workbook = new XSSFWorkbook();																			//excel tipusú osztály létrehjozása
-				XSSFSheet sheet = workbook.createSheet("Eredmények");																//excel osztályban egy tábla létrehozása a megadott névvel
-				
-				writeHeaderLine(sheet);																								//fejlécet lekészítő metódus meghívása
-
-				writeDataLines(result2, workbook, sheet);																			//tábla tartalmát beírja	
-				
-				sheet.autoSizeColumn(0);
-				sheet.autoSizeColumn(2);
-				sheet.autoSizeColumn(3);
-				sheet.autoSizeColumn(4);
-				sheet.autoSizeColumn(5);
-				sheet.autoSizeColumn(6);
-				sheet.autoSizeColumn(7);
-				sheet.autoSizeColumn(8);
-				sheet.autoSizeColumn(9);
-				sheet.autoSizeColumn(10);
-				sheet.autoSizeColumn(11);
-				sheet.autoSizeColumn(12);
-				sheet.autoSizeColumn(13);
-				sheet.autoSizeColumn(14);
-				sheet.autoSizeColumn(15);
-				sheet.autoSizeColumn(16);
-				sheet.autoSizeColumn(17);
-				sheet.autoSizeColumn(18);
-				sheet.autoSizeColumn(19);
-				sheet.autoSizeColumn(20);
-				sheet.lockAutoFilter(true);
-				
-				FileOutputStream outputStream = new FileOutputStream(menteshelye);		//file tipusú változó létrehozása a megadott helyen
-				workbook.write(outputStream);																						//adatok kiírása egy fájlba amit elöbb megadtunk
-				workbook.close();																									//adatofolyam lezárása
-				outputStream.close();																								//fájl lezárása
-				
-				//statement.close();
-				/*
-				DataTable datatable = new DataTable();
-				Workbook workbook2 = new Workbook();
-				JdbcAdapter jdbcAdapter = new JdbcAdapter();
-				result2.next();
-	            jdbcAdapter.fillDataTable(datatable, result2);
-	            
-		        //Get the first worksheet
-		        Worksheet sheet2 = workbook2.getWorksheets().get(0);
-		        sheet2.insertDataTable(datatable, true, 1, 1);
-		        sheet2.getAutoFilters().setRange(sheet2.getCellRange("A1:Z1"));
-		        sheet2.getAllocatedRange().autoFitColumns();
-		        sheet2.getAllocatedRange().autoFitRows();
-		        
-		        sheet2.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
-		        
-		        File fajl = new File(menteshelye.getName());																//file tipusú változó létrehozása a megadott helyen
-		        workbook2.saveToFile(fajl.getName(), ExcelVersion.Version2016);
-		        result2.close();
-		        cstmt.close();
-		        con.close();
-		        JOptionPane.showMessageDialog(null, "Mentés sikeres", "Info", 1);
-				*/
-				JOptionPane.showMessageDialog(null, "SQL lekérdezés kész", "Tájékoztató Üzenet", 1);								//String összefűzés végén  végén megjelenő üzenet
-		     
-			}
-			 
-			catch (SQLException e1) 
-			{
-				// TODO Auto-generated catch block
-				String hibauzenet2 = e1.toString();
-				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
-				
-			} catch (EncryptedDocumentException e1) {
-				// TODO Auto-generated catch block
-				String hibauzenet2 = e1.toString();
-				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
-				
-			}
-			
-			catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				String hibauzenet2 = e1.toString();
-				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
-				
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				String hibauzenet2 = e1.toString();
-				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
-				
+				SQL kiiro = new SQL();
+				kiiro.kiir(osszefuzott, menteshelye, 0);
+				kiiro.kiir(osszefuzott2, menteshelye, 1);
 			}
 			catch (Exception e1) 
 			{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				String hibauzenet2 = e1.toString();
+				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
 			}
-			}
-		 
+			}	 
 	}
 	
 	class ReszlegesKereses implements ActionListener																						//kereső gom megnoymáskor hívodik meg
@@ -526,7 +428,6 @@ public class SQL_lekerdezo
 				{
 					osszefuzott = "";
 					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
-					String sor;
 		 
 					if (returnVal == JFileChooser.APPROVE_OPTION) 
 					{
@@ -534,24 +435,44 @@ public class SQL_lekerdezo
 						
 						measureTime(true);																			//időmérő indítása
 		            	FileInputStream fis = new FileInputStream(file);											//inputstream osztály példányosítása
-		            	XSSFWorkbook workbook = new XSSFWorkbook(fis);  											//excel osztály létráhozása a beolvasott fájlal
-		            	XSSFSheet sheet = workbook.getSheetAt(0);
-		            	Iterator<Row> itr = sheet.iterator();    													//interator példányosítása 
-						
-		            	while (itr.hasNext())                 
-		            	{  
-			            	Row row = itr.next();  
-			            	Iterator<Cell> cellIterator = row.cellIterator();   									//iterating over each column  
-			            	while (cellIterator.hasNext())   
-			            	{  
-			            		Cell cell = cellIterator.next();
-			            		osszefuzott += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
-			            		
-			            	}  
-			            	 
-		            	}  
-		
+		            	try (XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+							XSSFSheet sheet = workbook.getSheetAt(0);
+							Iterator<Row> itr = sheet.iterator();    													//interator példányosítása 
+							
+							int szam = 1;
+									
+							while (itr.hasNext())                 
+							{  
+								Row row = itr.next();  
+								Iterator<Cell> cellIterator = row.cellIterator();   									//iterating over each column  
+								while (cellIterator.hasNext())   
+								{
+									//if(szam <= 8000)
+									//{
+										Cell cell = cellIterator.next();
+										osszefuzott += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
+									/*}
+									else if(szam >8000)
+									{
+										Cell cell = cellIterator.next();
+										osszefuzott2 += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére				
+									}
+									/*
+									else if(szam >= 16000 )
+									{
+										Cell cell = cellIterator.next();
+										osszefuzott3 += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
+									}
+									*/
+									szam++;
+								}
+								 
+							}
+						}
 		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 1);							//az utolsó vessző levágása a stringről
+		            	//osszefuzott2 = osszefuzott2.substring(0, osszefuzott2.length() - 1);
+		            	
+		            	//osszefuzott3 = osszefuzott3.substring(0, osszefuzott3.length() - 1);
 		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
 		            	System.out.println("Összefűzott panelek száma: " + osszefuzott.length());
 		            	//System.out.println(osszefuzott);
@@ -581,7 +502,7 @@ public class SQL_lekerdezo
 					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
 					
 					//fc.setCurrentDirectory(System.getProperty("user.home"));
-					String sor;
+				
 		 
 					if (returnVal == JFileChooser.APPROVE_OPTION) 
 					{
@@ -589,23 +510,23 @@ public class SQL_lekerdezo
 						
 						measureTime(true);																			//időmérő indítása
 		            	FileInputStream fis = new FileInputStream(file);											//inputstream osztály példányosítása
-		            	XSSFWorkbook workbook = new XSSFWorkbook(fis);  											//excel osztály létráhozása a beolvasott fájlal
-		            	XSSFSheet sheet = workbook.getSheetAt(0);
-		            	Iterator<Row> itr = sheet.iterator();    													//interator példányosítása 
-						
-		            	while (itr.hasNext())                 
-		            	{  
-			            	Row row = itr.next();  
-			            	Iterator<Cell> cellIterator = row.cellIterator();   									//iterating over each column  
-			            	while (cellIterator.hasNext())   
-			            	{  
-			            		Cell cell = cellIterator.next();
-			            		osszefuzott += ("panel like \"" + cell.getStringCellValue() +"%\" or ");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
-			            		
-			            	}  
-			            	 
-		            	}  
-		
+		            	try (XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+							XSSFSheet sheet = workbook.getSheetAt(0);
+							Iterator<Row> itr = sheet.iterator();    													//interator példányosítása 
+							
+							while (itr.hasNext())                 
+							{  
+								Row row = itr.next();  
+								Iterator<Cell> cellIterator = row.cellIterator();   									//iterating over each column  
+								while (cellIterator.hasNext())   
+								{  
+									Cell cell = cellIterator.next();
+									osszefuzott += ("panel like \"" + cell.getStringCellValue() +"%\" or ");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
+									
+								}  
+								 
+							}
+						}
 		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 3);							//az utolsó vessző levágása a stringről
 		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
 		            	System.out.println("Összefűzott panelek száma: " + osszefuzott.length());
@@ -766,7 +687,6 @@ public class SQL_lekerdezo
 				if (e.getSource() == mentes) 
 				{
 					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
-					String sor;
 		 
 					if (returnVal == JFileChooser.APPROVE_OPTION) 
 					{
