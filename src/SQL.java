@@ -1,8 +1,6 @@
 import java.io.File;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,70 +16,150 @@ import com.spire.xls.Worksheet;
 public class SQL 
 {
 	private ResultSet result;
+	private ResultSet result2;
 	private JdbcAdapter jdbcAdapter;
+	private JdbcAdapter jdbcAdapter2;
 	private DataTable datatable;
+	private DataTable datatable2;
 	private Workbook workbook;
+	private Statement cstmt;
+	private Connection con;
 	
-	void kiir(String osszefuzott, File menteshelye, int szam)
+	void kiir(String osszefuzott, String osszefuzott2, File menteshelye)
 	{
 		try
 		{
 			//Registering the Driver
-			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghÌv·sa
+			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver megh√≠v√°sa
 				
 			//Getting the connection
-			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcÌmÈhez valÛ csatlakoz·s
-			Connection con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszÛ felhaszn·lÛ nÈvvel
+			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipc√≠m√©hez val√≥ csatlakoz√°s
+			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelsz√≥ felhaszn√°l√≥ n√©vvel
 			System.out.println("Connection established......");
-				  
+			
+			SQL_lekerdezo.progressBar.setValue(10);
 			//Preparing a CallableStatement to call a procedure
-			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//t·rolt elj·r·s meghÌv·sa      videoton.veas_avmheti_teszt
+			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//t√°rolt elj√°r√°s megh√≠v√°sa      videoton.veas_avmheti_teszt
 			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from	videoton.fkov \n"
 					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
-					+ " where panel in (" +osszefuzott +")";
+					+ " where panel in (" + osszefuzott +")";
+			
+			String sql2 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
+					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
+					+ "videoton.fkov.dolgozo \n"
+					+ "from	videoton.fkov \n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
+					+ " where panel in (" + osszefuzott2 +")";
 			
 			Statement cstmt = con.createStatement(
 	                ResultSet.TYPE_SCROLL_INSENSITIVE,
 	                ResultSet.CONCUR_UPDATABLE);
+			
+			Statement cstmt2 = con.createStatement(
+	                ResultSet.TYPE_SCROLL_INSENSITIVE,
+	                ResultSet.CONCUR_UPDATABLE);
 			//cstmt = con.prepareStatement(sql);	  
-			//cstmt.setString(1, osszefuzott);			//osszefuzott																			//t·rolt elj·r·s paparmÈterÈnk megad·sa
+			//cstmt.setString(1, osszefuzott);			//osszefuzott																			//t√°rolt elj√°r√°s paparm√©ter√©nk megad√°sa
 				  
-			cstmt.execute(sql);																										//sql lejkÈrdezÈs futtat·sa
-			  
-			result = cstmt.getResultSet();																								//az sql lekÈrdezÈs tartalm·t odaadja egy result set v·ltozÛnak
+			cstmt.execute(sql);																										//sql lejk√©rdez√©s futtat√°sa
+			SQL_lekerdezo.progressBar.setValue(20);  
+			result = cstmt.getResultSet();																								//az sql lek√©rdez√©s tartalm√°t odaadja egy result set v√°ltoz√≥nak
 			//result.next();
 			//System.out.println(result.getInt(2));
 			
 			datatable = new DataTable();
+			datatable2 = new DataTable();
 			workbook = new Workbook();
+			workbook.setVersion(ExcelVersion.Version2013); 
 			jdbcAdapter = new JdbcAdapter();
+			jdbcAdapter2 = new JdbcAdapter();
 			
+			SQL_lekerdezo.progressBar.setValue(40);
 			jdbcAdapter.fillDataTable(datatable, result);
+			SQL_lekerdezo.progressBar.setValue(50);
 			
 			//Get the first worksheet
-			Worksheet sheet = workbook.getWorksheets().get(szam);
+			Worksheet sheet = workbook.getWorksheets().get(0);
 			sheet.insertDataTable(datatable, true, 1, 1);
 			sheet.getAutoFilters().setRange(sheet.getCellRange("A1:P1"));
 			sheet.getAllocatedRange().autoFitColumns();
 			sheet.getAllocatedRange().autoFitRows();
 			    
-			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÈlkˆvÈr be·llÌt·s
-			    
-			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
+			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // f√©lk√∂v√©r be√°ll√≠t√°s
+			
+			System.out.println("Els≈ë SQL");
+			
+			if(osszefuzott2 != "")
+        	{
+				cstmt2.execute(sql2);																										//sql lejk√©rdez√©s futtat√°sa
+				SQL_lekerdezo.progressBar.setValue(70);  
+				result2 = cstmt2.getResultSet();																								//az sql lek√©rdez√©s tartalm√°t odaadja egy result set v√°ltoz√≥nak
+				//result.next();
+				//System.out.println(result.getInt(2));
+				
+				
+				jdbcAdapter2.fillDataTable(datatable2, result2);
+				SQL_lekerdezo.progressBar.setValue(80);
+				//Get the first worksheet
+				Worksheet sheet2 = workbook.getWorksheets().get(1);
+				sheet2.insertDataTable(datatable2, true, 1, 1);
+				sheet2.getAutoFilters().setRange(sheet2.getCellRange("A1:P1"));
+				sheet2.getAllocatedRange().autoFitColumns();
+				sheet2.getAllocatedRange().autoFitRows();
+				    
+				sheet2.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // f√©lk√∂v√©r be√°ll√≠t√°s
+				
+				System.out.println("M√°sodik SQL");
+				
+				int a = workbook.getWorksheets().get(1).getLastRow();
+				int b = workbook.getWorksheets().get(1).getLastColumn();
+				
+				sheet2.getCellRange(2, 1, a, b).copy(sheet.getCellRange(sheet.getLastRow()+1, 1, a + sheet.getLastRow(), b));
+				sheet2.remove();
+        	}
+			
+			SQL_lekerdezo.progressBar.setValue(100);
 			result.close();
 			cstmt.close();
 			con.close();
-			JOptionPane.showMessageDialog(null, "MentÈs sikeres", "InfÛ", 1);
+			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
+			
+			JOptionPane.showMessageDialog(null, "Ment√©s sikeres", "Inf√≥", 1);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			String hibauzenet2 = e.toString();
-			JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba ¸zenet", 2);
+			JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba √ºzenet", 2);
 		}
+		finally                                                                     //finally r√©sz mindenk√©ppen lefut, hogy hiba eset√©n is lez√°rja a kacsolatot
+        {
+			//workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
+            try 
+            {
+              if (cstmt != null)
+                 con.close();
+            } 
+            catch (SQLException se) {}
+            try 
+            {
+              if (con != null)
+                 con.close();
+            } 
+            catch (SQLException se) 
+            {
+              se.printStackTrace();
+            }  
+        }	
+	}
+	
+	void fajlbair(File menteshelye)
+	{
+		workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
 	}
 }

@@ -2,11 +2,13 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,7 +20,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
-import org.apache.commons.compress.utils.Iterators;
 import org.apache.poi.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -28,11 +29,9 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.spire.data.table.DataTable;
-import com.spire.data.table.common.JdbcAdapter;
-import com.spire.xls.ExcelVersion;
-import com.spire.xls.Workbook;
-import com.spire.xls.Worksheet;
+
+import javax.swing.JProgressBar;
+import javax.swing.ProgressMonitorInputStream;
 
 
 
@@ -43,7 +42,7 @@ public class SQL_lekerdezo
 	private JFileChooser fc;
 	private String osszefuzott;
 	private String osszefuzott2;
-	private String osszefuzott3 ="";
+	//private String osszefuzott3 ="";
 	private JButton megnyit;
 	private JButton mentes;
 	private JButton reszleges;
@@ -51,7 +50,8 @@ public class SQL_lekerdezo
 	private static Long timer_start;
 	private JButton like;
 	private XSSFWorkbook workbook;
-
+	static JProgressBar progressBar;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -59,11 +59,15 @@ public class SQL_lekerdezo
 	{
 		EventQueue.invokeLater(new Runnable() 
 		{
-			public void run() {
-				try {
+			public void run() 
+			{
+				try 
+				{
 					SQL_lekerdezo window = new SQL_lekerdezo();
 					window.frame.setVisible(true);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}
@@ -123,6 +127,12 @@ public class SQL_lekerdezo
 		like.setBounds(164, 110, 89, 23);
 		like.addActionListener(new ReszlegesKereses());
 		frame.getContentPane().add(like);
+		
+		progressBar = new JProgressBar();
+		progressBar.setBounds(135, 201, 146, 23);
+		progressBar.setStringPainted(true);
+		progressBar.setValue(0);
+		frame.getContentPane().add(progressBar);
 	}
 	
 	class SQLKereses implements ActionListener																						//kereső gom megnoymáskor hívodik meg
@@ -137,8 +147,7 @@ public class SQL_lekerdezo
 					return;
 				}
 				SQL kiiro = new SQL();
-				kiiro.kiir(osszefuzott, menteshelye, 0);
-				kiiro.kiir(osszefuzott2, menteshelye, 1);
+				kiiro.kiir(osszefuzott, osszefuzott2, menteshelye);
 			}
 			catch (Exception e1) 
 			{
@@ -427,17 +436,27 @@ public class SQL_lekerdezo
 				if (e.getSource() == megnyit) 
 				{
 					osszefuzott = "";
+					osszefuzott2 = "";
 					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
 		 
 					if (returnVal == JFileChooser.APPROVE_OPTION) 
 					{
 						File file = fc.getSelectedFile();															//fájl változó megkpja azt a fájlt amit kiválsztottunk a filechooserrel
 						
+						progressBar.setValue(10);
+						
+						
 						measureTime(true);																			//időmérő indítása
-		            	FileInputStream fis = new FileInputStream(file);											//inputstream osztály példányosítása
-		            	try (XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+		            	InputStream fis = new BufferedInputStream(
+		            		    new ProgressMonitorInputStream(
+		            		            frame,
+		            		            "Reading " + file,
+		            		            new FileInputStream(file)));											//inputstream osztály példányosítása
+		            	try (XSSFWorkbook workbook = new XSSFWorkbook(fis)) 
+		            	{
 							XSSFSheet sheet = workbook.getSheetAt(0);
 							Iterator<Row> itr = sheet.iterator();    													//interator példányosítása 
+							progressBar.setValue(50);	
 							
 							int szam = 1;
 									
@@ -447,37 +466,34 @@ public class SQL_lekerdezo
 								Iterator<Cell> cellIterator = row.cellIterator();   									//iterating over each column  
 								while (cellIterator.hasNext())   
 								{
-									//if(szam <= 8000)
-									//{
+									if(szam < 8000)
+									{
 										Cell cell = cellIterator.next();
 										osszefuzott += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
-									/*}
-									else if(szam >8000)
+									}
+									else
 									{
 										Cell cell = cellIterator.next();
 										osszefuzott2 += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére				
 									}
-									/*
-									else if(szam >= 16000 )
-									{
-										Cell cell = cellIterator.next();
-										osszefuzott3 += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
-									}
-									*/
+									
 									szam++;
+									
 								}
 								 
 							}
+							progressBar.setValue(90);
 						}
 		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 1);							//az utolsó vessző levágása a stringről
-		            	//osszefuzott2 = osszefuzott2.substring(0, osszefuzott2.length() - 1);
+		            	if(osszefuzott2 != "")
+		            	{	
+		            		osszefuzott2 = osszefuzott2.substring(0, osszefuzott2.length() - 1);
+		            	}
 		            	
-		            	//osszefuzott3 = osszefuzott3.substring(0, osszefuzott3.length() - 1);
 		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
-		            	System.out.println("Összefűzott panelek száma: " + osszefuzott.length());
-		            	//System.out.println(osszefuzott);
+		            	
 					} 
-					
+					progressBar.setValue(100);
 		 
 				}
 				//System.out.println(osszefuzott);
@@ -686,6 +702,7 @@ public class SQL_lekerdezo
 			{
 				if (e.getSource() == mentes) 
 				{
+					progressBar.setValue(0);
 					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
 		 
 					if (returnVal == JFileChooser.APPROVE_OPTION) 
