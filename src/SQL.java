@@ -158,8 +158,165 @@ public class SQL
         }	
 	}
 	
-	void fajlbair(File menteshelye)
+	void csomagolt(String osszefuzott, String osszefuzott2, File menteshelye)
 	{
-		workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
+		try
+		{
+			//Registering the Driver
+			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghívása
+	
+			//Getting the connection
+			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcíméhez való csatlakozás
+			Connection con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszó felhasználó névvel
+			System.out.println("Connection established......");
+			
+			Statement cstmt = con.createStatement();
+			Statement cstmt2 = con.createStatement();
+			
+			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
+					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
+					+ "videoton.fkov.dolgozo \n"
+					+ "from	videoton.fkov \n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
+					+ " where panel in (" + osszefuzott +")";
+			
+			String sql2 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
+					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
+					+ "videoton.fkov.dolgozo \n"
+					+ "from	videoton.fkov \n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
+					+ " where panel in (" + osszefuzott2 +")";
+			
+			cstmt.execute(sql);																										//sql lejkérdezés futtatása
+			
+			result = cstmt.getResultSet();
+			
+			datatable = new DataTable();
+			datatable2 = new DataTable();
+			workbook = new Workbook();
+			workbook.setVersion(ExcelVersion.Version2013); 
+			jdbcAdapter = new JdbcAdapter();
+			jdbcAdapter2 = new JdbcAdapter();
+			
+			SQL_lekerdezo.progressBar.setValue(40);
+			jdbcAdapter.fillDataTable(datatable, result);
+			SQL_lekerdezo.progressBar.setValue(50);
+			
+			//Get the first worksheet
+			Worksheet sheet = workbook.getWorksheets().get(0);
+			sheet.insertDataTable(datatable, true, 1, 1);
+			sheet.getAutoFilters().setRange(sheet.getCellRange("A1:P1"));
+			sheet.getAllocatedRange().autoFitColumns();
+			sheet.getAllocatedRange().autoFitRows();
+			    
+			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+			
+			System.out.println("Első SQL");
+			
+			if(osszefuzott2 != "")
+        	{
+				cstmt2.execute(sql2);																										//sql lejkérdezés futtatása
+				SQL_lekerdezo.progressBar.setValue(70);  
+				result2 = cstmt2.getResultSet();																								//az sql lekérdezés tartalmát odaadja egy result set változónak
+				
+				jdbcAdapter2.fillDataTable(datatable2, result2);
+				SQL_lekerdezo.progressBar.setValue(80);
+				//Get the first worksheet
+				Worksheet sheet2 = workbook.getWorksheets().get(1);
+				sheet2.insertDataTable(datatable2, true, 1, 1);
+				sheet2.getAutoFilters().setRange(sheet2.getCellRange("A1:P1"));
+				sheet2.getAllocatedRange().autoFitColumns();
+				sheet2.getAllocatedRange().autoFitRows();
+				    
+				sheet2.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+				
+				System.out.println("Második SQL");
+				
+				int a = workbook.getWorksheets().get(1).getLastRow();
+				int b = workbook.getWorksheets().get(1).getLastColumn();
+				
+				sheet2.getCellRange(2, 1, a, b).copy(sheet.getCellRange(sheet.getLastRow()+1, 1, a + sheet.getLastRow(), b));
+				sheet2.remove();
+        	}
+			
+			SQL_lekerdezo.progressBar.setValue(100);
+			result.close();
+			cstmt.close();
+			con.close();
+			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
+			
+			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
+		}
+		catch (Exception e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			String hibauzenet = e1.toString();  
+            JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
+		} 
+	}
+	
+	void reszleges(String osszefuzott, File menteshelye)
+	{
+		try
+		{
+			//Registering the Driver
+			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghívása
+	
+			//Getting the connection
+			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcíméhez való csatlakozás
+			Connection con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszó felhasználó névvel
+			System.out.println("Connection established......");
+			
+			Statement cstmt = con.createStatement();
+			
+			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
+					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
+					+ "videoton.fkov.dolgozo \n"
+					+ "from	videoton.fkov \n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
+					+ " where " + osszefuzott +"";
+			
+			cstmt.execute(sql);																										//sql lejkérdezés futtatása
+			
+			result = cstmt.getResultSet();
+			
+			datatable = new DataTable();
+			
+			workbook = new Workbook();
+			workbook.setVersion(ExcelVersion.Version2013); 
+			jdbcAdapter = new JdbcAdapter();
+			
+			SQL_lekerdezo.progressBar.setValue(40);
+			jdbcAdapter.fillDataTable(datatable, result);
+			SQL_lekerdezo.progressBar.setValue(50);
+			
+			//Get the first worksheet
+			Worksheet sheet = workbook.getWorksheets().get(0);
+			sheet.insertDataTable(datatable, true, 1, 1);
+			sheet.getAutoFilters().setRange(sheet.getCellRange("A1:P1"));
+			sheet.getAllocatedRange().autoFitColumns();
+			sheet.getAllocatedRange().autoFitRows();
+			    
+			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+			
+			SQL_lekerdezo.progressBar.setValue(100);
+			result.close();
+			cstmt.close();
+			con.close();
+			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
+			
+			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
+		}
+		catch (Exception e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			String hibauzenet = e1.toString();  
+            JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
+		} 
 	}
 }
