@@ -21,6 +21,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.JProgressBar;
 import javax.swing.ProgressMonitorInputStream;
+import javax.swing.SwingUtilities;
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 
 
 
@@ -31,14 +38,18 @@ public class SQL_lekerdezo
 	private JFileChooser fc;
 	private String osszefuzott;
 	private String osszefuzott2;
-	//private String osszefuzott3 ="";
+	private String osszefuzott3;
+	private String osszefuzott4;
 	private JButton megnyit;
 	private JButton mentes;
 	private JButton reszleges;
 	private File menteshelye;
 	private static Long timer_start;
 	private JButton like;
+	private JRadioButton panelszam;
+	private JRadioButton szeriaszam;
 	static JProgressBar progressBar;
+	static int szazalek = 50;
 	
 	/**
 	 * Launch the application.
@@ -76,51 +87,124 @@ public class SQL_lekerdezo
 	private void initialize() 
 	{
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 699, 415);
 		frame.setPreferredSize(new Dimension(1024, 768));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
-		frame.getContentPane().setLayout(null);
 		frame.setTitle("SQL kereső");
 		
 		JButton start = new JButton("Start");
-		start.setBounds(51, 110, 89, 23);
 		start.addActionListener(new SQLKereses());
-		frame.getContentPane().add(start);
 		
 		megnyit = new JButton("Fájl megnyitás");
 		megnyit.addActionListener(new Megnyitas());
-		megnyit.setBounds(51, 37, 89, 23);
 		
 		fc = new JFileChooser();
 		
-		frame.getContentPane().add(megnyit);
-		
-		JButton csomagolt = new JButton("Csomagolt");
-		csomagolt.setBounds(289, 110, 89, 23);
-		csomagolt.addActionListener(new SQLKeresesCsomagolt());
-		frame.getContentPane().add(csomagolt);
-		
 		mentes = new JButton("Mentés helye");
-		mentes.setBounds(289, 37, 89, 23);
 		mentes.addActionListener(new Mentes());
-		frame.getContentPane().add(mentes);
 		
 		reszleges = new JButton("Részleges panel");
-		reszleges.setBounds(164, 37, 89, 23);
 		reszleges.addActionListener(new Reszlegessen());
-		frame.getContentPane().add(reszleges);
 		
 		like = new JButton("Like");
-		like.setBounds(164, 110, 89, 23);
 		like.addActionListener(new SQLReszlegesKereses());
-		frame.getContentPane().add(like);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(135, 201, 146, 23);
 		progressBar.setStringPainted(true);
 		progressBar.setValue(0);
-		frame.getContentPane().add(progressBar);
+		
+		JLabel lblNewLabel = new JLabel("Fájl megniytása:");
+		
+		JLabel lblNewLabel_1 = new JLabel("Részleges panelszám megniytása:");
+		
+		JLabel lblNewLabel_2 = new JLabel("Normál start");
+		
+		JLabel lblNewLabel_3 = new JLabel("Részleges panelszám keresés");
+		
+		JLabel lblNewLabel_4 = new JLabel("Mentés helye:");
+		
+		JLabel lblNewLabel_5 = new JLabel("Mire keresel?");
+		
+		panelszam = new JRadioButton("Panelszám");
+		panelszam.setSelected(true);
+		
+		szeriaszam = new JRadioButton("Szériaszám");
+		
+		ButtonGroup csoport = new ButtonGroup();
+		csoport.add(szeriaszam);
+		csoport.add(panelszam);
+		
+		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+					.addGap(51)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(megnyit, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED, 189, Short.MAX_VALUE)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel_1)
+								.addComponent(reszleges, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
+							.addGap(107))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(93)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(like, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblNewLabel_3)
+								.addComponent(lblNewLabel_2)
+								.addComponent(start, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
+							.addGap(130)))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(mentes, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel_4)
+						.addComponent(lblNewLabel_5)
+						.addComponent(panelszam)
+						.addComponent(szeriaszam))
+					.addGap(70))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(212)
+					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(331, Short.MAX_VALUE))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(37)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel)
+						.addComponent(lblNewLabel_4)
+						.addComponent(lblNewLabel_1))
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(megnyit)
+						.addComponent(mentes)
+						.addComponent(reszleges))
+					.addGap(37)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel_3)
+						.addComponent(lblNewLabel_5))
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(like)
+						.addComponent(panelszam))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(36)
+							.addComponent(lblNewLabel_2)
+							.addGap(18)
+							.addComponent(start)
+							.addGap(37)
+							.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(18)
+							.addComponent(szeriaszam)))
+					.addGap(41))
+		);
+		frame.getContentPane().setLayout(groupLayout);
 	}
 	
 	class SQLKereses implements ActionListener																						//kereső gom megnoymáskor hívodik meg
@@ -131,11 +215,31 @@ public class SQL_lekerdezo
 			{
 				if(menteshelye == null)
 				{
+					
 					JOptionPane.showMessageDialog(null, "Nincs kiválasztva a mentés helye", "Hiba üzenet", 2);
 					return;
 				}
+				
 				SQL kiiro = new SQL();
-				kiiro.kiir(osszefuzott, osszefuzott2, menteshelye);
+				
+				SwingUtilities.invokeLater(new Runnable() 
+				{
+				    public void run() 
+				    {
+				        //This will be called on the EDT
+				    	progressBar.setValue(szazalek);
+				    }
+				});
+				
+				if(panelszam.isSelected())
+				{
+					kiiro.kiir(osszefuzott, osszefuzott2, osszefuzott3, osszefuzott4, menteshelye);	
+				}
+				else
+				{
+					kiiro.szeriaszam(osszefuzott, menteshelye);
+				}
+				
 			}
 			catch (Exception e1) 
 			{
@@ -183,6 +287,9 @@ public class SQL_lekerdezo
 				{
 					osszefuzott = "";
 					osszefuzott2 = "";
+					osszefuzott3 = "";
+					osszefuzott4 = "";
+					
 					int returnVal = fc.showOpenDialog(frame);														//fájl megniytásának adbalak megnyit
 		 
 					if (returnVal == JFileChooser.APPROVE_OPTION) 
@@ -212,15 +319,25 @@ public class SQL_lekerdezo
 								Iterator<Cell> cellIterator = row.cellIterator();   									//iterating over each column  
 								while (cellIterator.hasNext())   
 								{
-									if(szam < 8000)
+									if(szam < 10000)
 									{
 										Cell cell = cellIterator.next();
 										osszefuzott += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére
 									}
-									else
+									else if(szam >= 10000 && szam < 20000)
 									{
 										Cell cell = cellIterator.next();
 										osszefuzott2 += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére				
+									}
+									else if(szam >= 20000  && szam < 30000)
+									{
+										Cell cell = cellIterator.next();
+										osszefuzott3 += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére				
+									}
+									else
+									{
+										Cell cell = cellIterator.next();
+										osszefuzott4 += ("\"" + cell.getStringCellValue() +"\",");							//cella tartalmát összefűzi egy stiringé, hogy az elejére és a végére tesz idézőjelet illetve egy vesszűt a végére				
 									}
 									
 									szam++;
@@ -234,6 +351,16 @@ public class SQL_lekerdezo
 		            	if(osszefuzott2 != "")
 		            	{	
 		            		osszefuzott2 = osszefuzott2.substring(0, osszefuzott2.length() - 1);
+		            	}
+		            	
+		            	if(osszefuzott3 != "")
+		            	{	
+		            		osszefuzott3 = osszefuzott3.substring(0, osszefuzott3.length() - 1);
+		            	}
+		            	
+		            	if(osszefuzott4 != "")
+		            	{	
+		            		osszefuzott4 = osszefuzott4.substring(0, osszefuzott4.length() - 1);
 		            	}
 		            	
 		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
@@ -304,32 +431,6 @@ public class SQL_lekerdezo
 				JOptionPane.showMessageDialog(null, "Olvasási hiba történt", "Hibaüzenet", 2);
 			}
 		 }		
-	}
-	
-	class SQLKeresesCsomagolt implements ActionListener																						//kereső gom megnoymáskor hívodik meg
-	{
-		public void actionPerformed(ActionEvent e)
-		 {
-			try 
-			{
-				if(menteshelye == null)
-				{
-					JOptionPane.showMessageDialog(null, "Nincs kiválasztva a mentés helye", "Hiba üzenet", 2);
-					return;
-				}
-				SQL kiiro = new SQL();
-				kiiro.csomagolt(osszefuzott, osszefuzott2, menteshelye);
-			}
-			catch (Exception e1) 
-			{
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				String hibauzenet2 = e1.toString();
-				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
-			}
-			
-		}
-			
 	}
 	
 	static public float measureTime(boolean run)					//idõmérõ metódus
