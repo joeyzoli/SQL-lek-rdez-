@@ -35,17 +35,17 @@ public class SQL
 		try
 		{
 			//Registering the Driver
-			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghívása
+			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghÃ­vÃ¡sa
 				
 			//Getting the connection
-			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcíméhez való csatlakozás
-			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszó felhasználó névvel
+			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcÃ­mÃ©hez valÃ³ csatlakozÃ¡s
+			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszÃ³ felhasznÃ¡lÃ³ nÃ©vvel
 			System.out.println("Connection established......");
 			
 			SQL_lekerdezo.szazalek = 70;
 			//SQL_lekerdezo.progressBar.setValue(10);
 			//Preparing a CallableStatement to call a procedure
-			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//tárolt eljárás meghívása      videoton.veas_avmheti_teszt
+			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//tÃ¡rolt eljÃ¡rÃ¡s meghÃ­vÃ¡sa      videoton.veas_avmheti_teszt
 			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
@@ -94,10 +94,10 @@ public class SQL
 	                ResultSet.TYPE_SCROLL_INSENSITIVE,
 	                ResultSet.CONCUR_UPDATABLE);
 			
-			cstmt.execute(sql);																										//sql lejkérdezés futtatása
+			cstmt.execute(sql);																										//sql llekérdezés futtatása
 			
 			SQL_lekerdezo.szazalek = 20;
-			result = cstmt.getResultSet();																								//az sql lekérdezés tartalmát odaadja egy result set változónak
+			result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 			
 			datatable = new DataTable();
 			datatable2 = new DataTable();
@@ -121,16 +121,16 @@ public class SQL
 			sheet.getAllocatedRange().autoFitColumns();
 			sheet.getAllocatedRange().autoFitRows();
 			    
-			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 			
 			System.out.println("Első SQL");
 			
 			if(osszefuzott2 != "")
         	{
-				cstmt2.execute(sql2);																										//sql lejkérdezés futtatása
+				cstmt2.execute(sql2);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 				
 				SQL_lekerdezo.szazalek = 70;
-				result2 = cstmt2.getResultSet();																								//az sql lekérdezés tartalmát odaadja egy result set változónak
+				result2 = cstmt2.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 				
 				jdbcAdapter2.fillDataTable(datatable2, result2);
 				SQL_lekerdezo.szazalek = 80;
@@ -141,7 +141,7 @@ public class SQL
 				sheet2.getAllocatedRange().autoFitColumns();
 				sheet2.getAllocatedRange().autoFitRows();
 				    
-				sheet2.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+				sheet2.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 				
 				System.out.println("Második SQL");
 				
@@ -154,10 +154,10 @@ public class SQL
 			
 			if(osszefuzott3 != "")
         	{
-				cstmt3.execute(sql3);																										//sql lejkérdezés futtatása
+				cstmt3.execute(sql3);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 				
 				SQL_lekerdezo.szazalek = 70;
-				result3 = cstmt3.getResultSet();																								//az sql lekérdezés tartalmát odaadja egy result set változónak
+				result3 = cstmt3.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 				
 				jdbcAdapter3.fillDataTable(datatable3, result3);
 				SQL_lekerdezo.szazalek = 80;
@@ -168,7 +168,7 @@ public class SQL
 				sheet3.getAllocatedRange().autoFitColumns();
 				sheet3.getAllocatedRange().autoFitRows();
 				    
-				sheet3.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+				sheet3.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 				
 				System.out.println("Harmadik SQL");
 				
@@ -181,10 +181,10 @@ public class SQL
 			
 			if(osszefuzott4 != "")
         	{
-				cstmt4.execute(sql4);																										//sql lejkérdezés futtatása
+				cstmt4.execute(sql4);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 				
 				SQL_lekerdezo.szazalek = 70;
-				result4 = cstmt4.getResultSet();																								//az sql lekérdezés tartalmát odaadja egy result set változónak
+				result4 = cstmt4.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 				
 				jdbcAdapter4.fillDataTable(datatable4, result4);
 				SQL_lekerdezo.szazalek = 80;
@@ -195,7 +195,7 @@ public class SQL
 				sheet3.getAllocatedRange().autoFitColumns();
 				sheet3.getAllocatedRange().autoFitRows();
 				    
-				sheet3.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+				sheet3.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 				
 				System.out.println("Negyedik SQL");
 				
@@ -220,7 +220,7 @@ public class SQL
 			String hibauzenet2 = e.toString();
 			JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
 		}
-		finally                                                                     //finally rész mindenképpen lefut, hogy hiba esetén is lezárja a kacsolatot
+		finally                                                                     //finally rÃ©sz mindenkÃ©ppen lefut, hogy hiba esetÃ©n is lezÃ¡rja a kacsolatot
         {
             try 
             {
@@ -245,17 +245,17 @@ public class SQL
 		try
 		{
 			//Registering the Driver
-			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghívása
+			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghÃ­vÃ¡sa
 				
 			//Getting the connection
-			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcíméhez való csatlakozás
-			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszó felhasználó névvel
+			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcÃ­mÃ©hez valÃ³ csatlakozÃ¡s
+			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszÃ³ felhasznÃ¡lÃ³ nÃ©vvel
 			System.out.println("Connection established......");
 			
 			SQL_lekerdezo.szazalek = 70;
 			//SQL_lekerdezo.progressBar.setValue(10);
 			//Preparing a CallableStatement to call a procedure
-			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//tárolt eljárás meghívása      videoton.veas_avmheti_teszt
+			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//tÃ¡rolt eljÃ¡rÃ¡s meghÃ­vÃ¡sa      videoton.veas_avmheti_teszt
 			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
@@ -270,10 +270,10 @@ public class SQL
 	                ResultSet.TYPE_SCROLL_INSENSITIVE,
 	                ResultSet.CONCUR_UPDATABLE);
 			
-			cstmt.execute(sql);																										//sql lejkérdezés futtatása
+			cstmt.execute(sql);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 			
 			SQL_lekerdezo.szazalek = 20;
-			result = cstmt.getResultSet();																								//az sql lekérdezés tartalmát odaadja egy result set változónak
+			result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 			
 			datatable = new DataTable();
 			
@@ -294,7 +294,7 @@ public class SQL
 			sheet.getAllocatedRange().autoFitColumns();
 			sheet.getAllocatedRange().autoFitRows();
 			    
-			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 			sheet2.remove();
 			sheet3.remove();
 			SQL_lekerdezo.szazalek = 100;
@@ -303,15 +303,15 @@ public class SQL
 			con.close();
 			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
 			
-			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
+			JOptionPane.showMessageDialog(null, "MentÃ©s sikeres", "InfÃ³", 1);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			String hibauzenet2 = e.toString();
-			JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
+			JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba Ã¼zenet", 2);
 		}
-		finally                                                                     //finally rész mindenképpen lefut, hogy hiba esetén is lezárja a kacsolatot
+		finally                                                                     //finally rÃ©sz mindenkÃ©ppen lefut, hogy hiba esetÃ©n is lezÃ¡rja a kacsolatot
         {
             try 
             {
@@ -337,11 +337,11 @@ public class SQL
 		try
 		{
 			//Registering the Driver
-			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghívása
+			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghÃ­vÃ¡sa
 	
 			//Getting the connection
-			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcíméhez való csatlakozás
-			Connection con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszó felhasználó névvel
+			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcÃ­mÃ©hez valÃ³ csatlakozÃ¡s
+			Connection con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszÃ³ felhasznÃ¡lÃ³ nÃ©vvel
 			System.out.println("Connection established......");
 			
 			Statement cstmt = con.createStatement();
@@ -354,7 +354,7 @@ public class SQL
 					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
 					+ " where " + osszefuzott +"";
 			
-			cstmt.execute(sql);																										//sql lejkérdezés futtatása
+			cstmt.execute(sql);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 			
 			result = cstmt.getResultSet();
 			
@@ -375,7 +375,7 @@ public class SQL
 			sheet.getAllocatedRange().autoFitColumns();
 			sheet.getAllocatedRange().autoFitRows();
 			    
-			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // félkövér beállítás
+			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 			
 			SQL_lekerdezo.progressBar.setValue(100);
 			result.close();
@@ -383,14 +383,14 @@ public class SQL
 			con.close();
 			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
 			
-			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
+			JOptionPane.showMessageDialog(null, "MentÃ©s sikeres", "InfÃ³", 1);
 		}
 		catch (Exception e1) 
 		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			String hibauzenet = e1.toString();  
-            JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
+            JOptionPane.showMessageDialog(null, hibauzenet, "Hiba Ã¼zenet", 2);
 		} 
 	}
 }
