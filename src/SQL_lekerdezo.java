@@ -1,8 +1,14 @@
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Random;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JButton;
@@ -23,7 +29,7 @@ import javax.swing.JRadioButton;
 
 
 
-public class SQL_lekerdezo 
+public class SQL_lekerdezo implements ActionListener
 {
 	private JFrame frame;
 	private JFileChooser fc;
@@ -34,6 +40,7 @@ public class SQL_lekerdezo
 	private JButton megnyit;
 	private JButton mentes;
 	private JButton reszleges;
+	private JButton start;
 	private File menteshelye;
 	private static Long timer_start;
 	private JButton like;
@@ -47,6 +54,7 @@ public class SQL_lekerdezo
 	 */
 	public static void main(String[] args) 
 	{
+		
 		EventQueue.invokeLater(new Runnable() 
 		{
 			public void run() 
@@ -61,8 +69,7 @@ public class SQL_lekerdezo
 					e.printStackTrace();
 				}
 			}
-		});
-		
+		});	
 	}
 
 	/**
@@ -83,9 +90,9 @@ public class SQL_lekerdezo
 		frame.setPreferredSize(new Dimension(1024, 768));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
-		frame.setTitle("SQL keresÅ‘");
+		frame.setTitle("SQL keresés");
 		
-		JButton start = new JButton("Start");
+		start = new JButton("Start");
 		start.addActionListener(new SQLKereses());
 		
 		megnyit = new JButton("F\u00E1jl megniyt\u00E1sa");
@@ -126,9 +133,6 @@ public class SQL_lekerdezo
 		ButtonGroup csoport = new ButtonGroup();
 		csoport.add(szeriaszam);
 		csoport.add(panelszam);
-		
-		ProgressWorker worker = new ProgressWorker(progressBar);
-		worker.execute();
 		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -204,12 +208,19 @@ public class SQL_lekerdezo
 		 {		
 			try 
 			{
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				Task task = new Task();
+				task.addPropertyChangeListener(new Figyelo());
+		        task.execute();
+				szazalek = 0;
 				if(menteshelye == null)
 				{
 					
 					JOptionPane.showMessageDialog(null, "Nincs kiválasztva a mentés helye", "Hiba üzenet", 2);
 					return;
 				}
+				
+				
 				
 				SQL kiiro = new SQL();
 				
@@ -230,7 +241,8 @@ public class SQL_lekerdezo
 				String hibauzenet2 = e1.toString();
 				JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
 			}
-			}	 
+			frame.setCursor(null);
+		}	 
 	}
 	
 	class SQLReszlegesKereses implements ActionListener																						//keresÅ‘ gom megnoymÃ¡skor hÃ­vodik meg
@@ -265,6 +277,11 @@ public class SQL_lekerdezo
 		 {
 			try
 			{
+				progressBar.setIndeterminate(true);
+				Task task = new Task();
+		        task.addPropertyChangeListener(new Figyelo());
+		        task.execute();
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				if (e.getSource() == megnyit) 
 				{
 					osszefuzott = "";
@@ -322,7 +339,7 @@ public class SQL_lekerdezo
 								
 								 
 							}
-							progressBar.setValue(90);
+							szazalek = 90;
 						
 		            	
 		            	osszefuzott = osszefuzott.substring(0, osszefuzott.length() - 1);							//az utolsÃ³ vesszÅ‘ levÃ¡gÃ¡sa a stringrÅ‘l
@@ -341,13 +358,11 @@ public class SQL_lekerdezo
 		            		osszefuzott4 = osszefuzott4.substring(0, osszefuzott4.length() - 1);
 		            	}
 		            	
-		            	System.out.println("Az Ã¶sszefÅ±zÃ©s ideje: " + (measureTime(false) / 1000000) + "ms");
+		            	System.out.println("Az összefűzés ideje: " + (measureTime(false) / 1000000) + "ms");
 		            	
 					} 
-					progressBar.setValue(100);
-		 
 				}
-				//System.out.println(osszefuzott);
+				progressBar.setValue(100);
 				JOptionPane.showMessageDialog(null, "Összefűzés kész", "Tájékoztató üzenet", 1);		//String Ã¶sszefÅ±zÃ©s vÃ©gÃ©n  vÃ©gÃ©n megjelenÅ‘ Ã¼zenet
 			}
 			catch(Exception e1)
@@ -355,7 +370,8 @@ public class SQL_lekerdezo
 				e1.printStackTrace();
 				JOptionPane.showMessageDialog(null, "Olvasási hiba történt", "Hiba üzenet", 2);
 			}
-		 }		
+			frame.setCursor(null);
+		 }
 	}
 	
 	class Reszlegessen implements ActionListener																		//megnyitÃ³ osztÃ¡ly
@@ -369,9 +385,6 @@ public class SQL_lekerdezo
 					osszefuzott = "";
 					osszefuzott2 = "";
 					int returnVal = fc.showOpenDialog(frame);														//fÃ¡jl megniytÃ¡sÃ¡nak adbalak megnyit
-					
-					//fc.setCurrentDirectory(System.getProperty("user.home"));
-				
 		 
 					if (returnVal == JFileChooser.APPROVE_OPTION) 
 					{
@@ -406,27 +419,59 @@ public class SQL_lekerdezo
 		 }		
 	}
 	
-	private static class ProgressWorker extends SwingWorker<Void, Integer> 
+	class Task extends SwingWorker<Void, Void> 
 	{
-        private final JProgressBar progress;
-
-        public ProgressWorker(JProgressBar progress) 
-        {
-            this.progress = progress;
-        }
-
+        /*
+         * Main task. Executed in background thread.
+         */
         @Override
-        protected Void doInBackground() throws Exception 
+        public Void doInBackground() 
         {
-            progressBar.setValue(szazalek);
+            Random random = new Random();
+            int progress = 0;
+            //Initialize progress property.
+            setProgress(0);
+            while (progress < 100) 
+            {
+                //Sleep for up to one second.
+                try 
+                {
+                    Thread.sleep(random.nextInt(1000));
+                } 
+                catch (InterruptedException ignore) {}
+                //Make random progress.
+                
+                progress += random.nextInt(10);									//random.nextInt(10);
+                setProgress(Math.min(progress, 100));
+            }
             return null;
         }
 
+        /*
+         * Executed in event dispatching thread
+         */
         @Override
-        protected void done() {
-            progress.setValue(100);
+        public void done() 
+        {
+            Toolkit.getDefaultToolkit().beep();
+            start.setEnabled(true);
+            //setCursor(null); //turn off the wait cursor
         }
     }
+	
+	class Figyelo implements PropertyChangeListener
+	{
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+	        if ("progress" == evt.getPropertyName()) 
+	        {
+	        	progressBar.setIndeterminate(false);
+	            int progress = (Integer) evt.getNewValue();
+	            progressBar.setValue(progress);
+	            
+	        } 
+	    }
+	}
 	
 	static public float measureTime(boolean run)					//idÃµmÃ©rÃµ metÃ³dus
 	{
@@ -471,5 +516,13 @@ public class SQL_lekerdezo
                 JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
 			}
 		 }
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		// TODO Auto-generated method stub
+		
 	}
 }

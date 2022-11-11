@@ -34,6 +34,7 @@ public class SQL
 	{
 		try
 		{
+			SQL_lekerdezo.szazalek = 0;
 			//Registering the Driver
 			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghÃ­vÃ¡sa
 				
