@@ -9,27 +9,26 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Random;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingWorker;
 
 import com.spire.data.table.DataTable;
 import com.spire.xls.Workbook;
 import com.spire.xls.Worksheet;
 
-import javax.swing.JProgressBar;
-import javax.swing.SwingWorker;
-import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
 
 
-
-public class SQL_lekerdezo implements ActionListener
+public class SQL_lekerdezo
 {
 	private JFrame frame;
 	private JFileChooser fc;
@@ -90,7 +89,7 @@ public class SQL_lekerdezo implements ActionListener
 		frame.setPreferredSize(new Dimension(1024, 768));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
-		frame.setTitle("SQL keresés");
+		frame.setTitle("SQL keresés   V1.2");
 		
 		start = new JButton("Start");
 		start.addActionListener(new SQLKereses());
@@ -199,6 +198,7 @@ public class SQL_lekerdezo implements ActionListener
 					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
 					.addGap(96))
 		);
+		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setLayout(groupLayout);
 	}
 	
@@ -209,9 +209,9 @@ public class SQL_lekerdezo implements ActionListener
 			try 
 			{
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				Task task = new Task();
-				task.addPropertyChangeListener(new Figyelo());
-		        task.execute();
+				//Task task = new Task();
+				//task.addPropertyChangeListener(new Figyelo());
+		        //task.execute();
 				szazalek = 0;
 				if(menteshelye == null)
 				{
@@ -278,9 +278,9 @@ public class SQL_lekerdezo implements ActionListener
 			try
 			{
 				progressBar.setIndeterminate(true);
-				Task task = new Task();
-		        task.addPropertyChangeListener(new Figyelo());
-		        task.execute();
+				//Task task = new Task();
+		        //task.addPropertyChangeListener(new Figyelo());
+		        //task.execute();
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				if (e.getSource() == megnyit) 
 				{
@@ -516,13 +516,5 @@ public class SQL_lekerdezo implements ActionListener
                 JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
 			}
 		 }
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) 
-	{
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		// TODO Auto-generated method stub
-		
 	}
 }
