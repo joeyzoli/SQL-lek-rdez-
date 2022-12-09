@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -6,6 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.swing.JOptionPane;
+
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import com.spire.data.table.DataTable;
 import com.spire.data.table.common.JdbcAdapter;
 import com.spire.xls.ExcelVersion;
@@ -218,6 +223,17 @@ public class SQL
 			workbook.setActiveSheetIndex(0); 
 			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
 			
+			FileInputStream fileStream = new FileInputStream(menteshelye.getAbsolutePath());
+			try (XSSFWorkbook workbook = new XSSFWorkbook(fileStream)) 
+			{
+				for(int i = workbook.getNumberOfSheets()-1; i>0 ;i--)
+				{    
+					workbook.removeSheetAt(i); 
+	            }      
+				FileOutputStream output = new FileOutputStream(menteshelye.getAbsolutePath());
+				workbook.write(output);
+				output.close();
+			}
 			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
 		}
 		catch(Exception e)
