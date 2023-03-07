@@ -325,13 +325,25 @@ public class SQL
 			con.close();
 			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
 			
-			JOptionPane.showMessageDialog(null, "MentÃ©s sikeres", "InfÃ³", 1);
+			FileInputStream fileStream = new FileInputStream(menteshelye.getAbsolutePath());
+			try (XSSFWorkbook workbook = new XSSFWorkbook(fileStream)) 
+			{
+				for(int i = workbook.getNumberOfSheets()-1; i>0 ;i--)
+				{    
+					workbook.removeSheetAt(i); 
+	            }      
+				FileOutputStream output = new FileOutputStream(menteshelye.getAbsolutePath());
+				workbook.write(output);
+				output.close();
+			}
+			
+			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			String hibauzenet2 = e.toString();
-			JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba Ã¼zenet", 2);
+			JOptionPane.showMessageDialog(null, hibauzenet2, "Hiba üzenet", 2);
 		}
 		finally                                                                     //finally rÃ©sz mindenkÃ©ppen lefut, hogy hiba esetÃ©n is lezÃ¡rja a kacsolatot
         {
@@ -405,14 +417,26 @@ public class SQL
 			con.close();
 			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
 			
-			JOptionPane.showMessageDialog(null, "MentÃ©s sikeres", "InfÃ³", 1);
+			FileInputStream fileStream = new FileInputStream(menteshelye.getAbsolutePath());
+			try (XSSFWorkbook workbook = new XSSFWorkbook(fileStream)) 
+			{
+				for(int i = workbook.getNumberOfSheets()-1; i>0 ;i--)
+				{    
+					workbook.removeSheetAt(i); 
+	            }      
+				FileOutputStream output = new FileOutputStream(menteshelye.getAbsolutePath());
+				workbook.write(output);
+				output.close();
+			}
+			
+			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
 		}
 		catch (Exception e1) 
 		{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			String hibauzenet = e1.toString();  
-            JOptionPane.showMessageDialog(null, hibauzenet, "Hiba Ã¼zenet", 2);
+            JOptionPane.showMessageDialog(null, hibauzenet, "Hiba üzenet", 2);
 		} 
 	}
 }

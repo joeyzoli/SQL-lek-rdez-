@@ -209,9 +209,7 @@ public class SQL_lekerdezo
 			try 
 			{
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				//Task task = new Task();
-				//task.addPropertyChangeListener(new Figyelo());
-		        //task.execute();
+				
 				szazalek = 0;
 				if(menteshelye == null)
 				{
