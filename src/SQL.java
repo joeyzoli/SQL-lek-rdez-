@@ -53,16 +53,17 @@ public class SQL
 			//Preparing a CallableStatement to call a procedure
 			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");
 			
-			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
+			/*String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from	videoton.fkov \n"
 					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
-					+ " where panel in (" + osszefuzott +")";
+					+ " where panel in (" + osszefuzott +")";*/
 			
 			//String sql = "select * from videoton.fkovadat where fkov in ("+ osszefuzott +")";
+			String sql = "SELECT * FROM videoton.kov where panel  in ("+ osszefuzott +")";
 			String sql2 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
