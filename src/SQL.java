@@ -39,7 +39,6 @@ public class SQL
 	{
 		try
 		{
-			SQL_lekerdezo.szazalek = 0;
 			//Registering the Driver
 			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghÃ­vÃ¡sa
 				
@@ -48,22 +47,21 @@ public class SQL
 			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszÃ³ felhasznÃ¡lÃ³ nÃ©vvel
 			System.out.println("Connection established......");
 			
-			SQL_lekerdezo.szazalek = 70;
 			//SQL_lekerdezo.progressBar.setValue(10);
 			//Preparing a CallableStatement to call a procedure
 			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");
 			
-			/*String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
+			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from	videoton.fkov \n"
 					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
-					+ " where panel in (" + osszefuzott +")";*/
+					+ " where panel in (" + osszefuzott +")";
 			
 			//String sql = "select * from videoton.fkovadat where fkov in ("+ osszefuzott +")";
-			String sql = "SELECT * FROM videoton.kov where panel  in ("+ osszefuzott +")";
+			//String sql = "SELECT * FROM videoton.kov where panel  in ("+ osszefuzott +")";
 			String sql2 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
@@ -109,7 +107,6 @@ public class SQL
 			
 			cstmt.execute(sql);																										//sql llekérdezés futtatása
 			
-			SQL_lekerdezo.szazalek = 20;
 			result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 			
 			datatable = new DataTable();
@@ -122,10 +119,8 @@ public class SQL
 			jdbcAdapter2 = new JdbcAdapter();
 			jdbcAdapter3 = new JdbcAdapter();
 			jdbcAdapter4 = new JdbcAdapter();
-			
-			SQL_lekerdezo.szazalek = 40;
+
 			jdbcAdapter.fillDataTable(datatable, result);
-			SQL_lekerdezo.szazalek = 50;
 			
 			//Get the first worksheet
 			Worksheet sheet = workbook.getWorksheets().get(0);
@@ -142,11 +137,9 @@ public class SQL
         	{
 				cstmt2.execute(sql2);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 				
-				SQL_lekerdezo.szazalek = 70;
 				result2 = cstmt2.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 				
 				jdbcAdapter2.fillDataTable(datatable2, result2);
-				SQL_lekerdezo.szazalek = 80;
 				//Get the first worksheet
 				Worksheet sheet2 = workbook.getWorksheets().get(1);
 				sheet2.insertDataTable(datatable2, true, 1, 1);
@@ -168,12 +161,10 @@ public class SQL
 			if(osszefuzott3 != "")
         	{
 				cstmt3.execute(sql3);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
-				
-				SQL_lekerdezo.szazalek = 70;
+
 				result3 = cstmt3.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 				
 				jdbcAdapter3.fillDataTable(datatable3, result3);
-				SQL_lekerdezo.szazalek = 80;
 				//Get the first worksheet
 				Worksheet sheet3 = workbook.getWorksheets().get(1);
 				sheet3.insertDataTable(datatable3, true, 1, 1);
@@ -195,12 +186,8 @@ public class SQL
 			if(osszefuzott4 != "")
         	{
 				cstmt4.execute(sql4);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
-				
-				SQL_lekerdezo.szazalek = 70;
-				result4 = cstmt4.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
-				
+				result4 = cstmt4.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak				
 				jdbcAdapter4.fillDataTable(datatable4, result4);
-				SQL_lekerdezo.szazalek = 80;
 				//Get the first worksheet
 				Worksheet sheet3 = workbook.getWorksheets().get(0);
 				sheet3.insertDataTable(datatable4, true, 1, 1);
@@ -218,8 +205,6 @@ public class SQL
 				sheet3.getCellRange(2, 1, a, b).copy(sheet.getCellRange(sheet.getLastRow()+1, 1, a + sheet.getLastRow(), b));
 				//sheet3.remove();
         	}
-			
-			SQL_lekerdezo.szazalek = 100;
 			result.close();
 			cstmt.close();
 			con.close();
@@ -237,7 +222,7 @@ public class SQL
 				workbook.write(output);
 				output.close();
 			}
-			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
+			JOptionPane.showMessageDialog(null, "Mentve az asztalra Eredmények.xlsx néven", "Infó", 1);
 		}
 		catch(Exception e)
 		{
@@ -276,8 +261,7 @@ public class SQL
 			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcÃ­mÃ©hez valÃ³ csatlakozÃ¡s
 			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszÃ³ felhasznÃ¡lÃ³ nÃ©vvel
 			System.out.println("Connection established......");
-			
-			SQL_lekerdezo.szazalek = 70;
+
 			//SQL_lekerdezo.progressBar.setValue(10);
 			//Preparing a CallableStatement to call a procedure
 			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");									//tÃ¡rolt eljÃ¡rÃ¡s meghÃ­vÃ¡sa      videoton.veas_avmheti_teszt
@@ -296,8 +280,6 @@ public class SQL
 	                ResultSet.CONCUR_UPDATABLE);
 			
 			cstmt.execute(sql);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
-			
-			SQL_lekerdezo.szazalek = 20;
 			result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 			
 			datatable = new DataTable();
@@ -305,10 +287,7 @@ public class SQL
 			workbook = new Workbook();
 			workbook.setVersion(ExcelVersion.Version2013); 
 			jdbcAdapter = new JdbcAdapter();
-			
-			SQL_lekerdezo.szazalek = 40;
 			jdbcAdapter.fillDataTable(datatable, result);
-			SQL_lekerdezo.szazalek = 50;
 			
 			//Get the first worksheet
 			Worksheet sheet = workbook.getWorksheets().get(0);
@@ -322,7 +301,6 @@ public class SQL
 			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 			sheet2.remove();
 			sheet3.remove();
-			SQL_lekerdezo.szazalek = 100;
 			result.close();
 			cstmt.close();
 			con.close();
@@ -340,7 +318,7 @@ public class SQL
 				output.close();
 			}
 			
-			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
+			JOptionPane.showMessageDialog(null, "Mentve az asztalra Eredmények.xlsx néven", "Infó", 1);
 		}
 		catch(Exception e)
 		{
@@ -401,9 +379,7 @@ public class SQL
 			workbook.setVersion(ExcelVersion.Version2013); 
 			jdbcAdapter = new JdbcAdapter();
 			
-			SQL_lekerdezo.progressBar.setValue(40);
 			jdbcAdapter.fillDataTable(datatable, result);
-			SQL_lekerdezo.progressBar.setValue(50);
 			
 			//Get the first worksheet
 			Worksheet sheet = workbook.getWorksheets().get(0);
@@ -414,7 +390,6 @@ public class SQL
 			    
 			sheet.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 			
-			SQL_lekerdezo.progressBar.setValue(100);
 			result.close();
 			cstmt.close();
 			con.close();
@@ -432,7 +407,7 @@ public class SQL
 				output.close();
 			}
 			
-			JOptionPane.showMessageDialog(null, "Mentés sikeres", "Infó", 1);
+			JOptionPane.showMessageDialog(null, "Mentve az asztalra Eredmények.xlsx néven", "Infó", 1);
 		}
 		catch (Exception e1) 
 		{
