@@ -51,17 +51,27 @@ public class SQL
 			//Preparing a CallableStatement to call a procedure
 			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");
 			
-			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
+			/*String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from	videoton.fkov \n"
 					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
-					+ " where panel in (" + osszefuzott +")";
+					+ " where panel in (" + osszefuzott +") and hely = '50'";*/
 			
 			//String sql = "select * from videoton.fkovadat where fkov in ("+ osszefuzott +")";
-			//String sql = "SELECT * FROM videoton.kov where panel  in ("+ osszefuzott +")";
+			// String sql = "SELECT * FROM videoton.kov where panel  in ("+ osszefuzott +")";					//alaktrész beépülés
+			/*String sql = "select *\r\n"
+					+ "from videoton.fkov\r\n"
+					+ "inner join	fkovsor on fkovsor.azon = fkov.hely\r\n"
+					+ "where 3=3\r\n"
+					+ "and ido in ('2023.07.14 05:27:50','2023.07.14 09:12:19','2023.07.14 09:12:50','2023.07.22 05:47:36','2023.07.22 07:25:32','2023.08.11 14:54:48','2023.08.11 14:56:39','2023.08.11 14:57:17',\r\n"
+					+ "'2023.08.11 14:58:31','2023.08.11 15:00:24','2023.08.11 15:01:01','2023.08.15 14:39:47','2023.08.15 14:40:24','2023.08.15 14:41:02','2023.08.15 14:50:00','2023.08.15 14:51:14',\r\n"
+					+ "'2023.08.15 14:51:52', '2023.08.15 14:52:29','2023.08.15 14:53:06','2023.08.15 14:53:44','2023.08.15 14:54:22')\r\n"
+					+ "and hely = '50'";*/
+			String sql = "select * from videoton.fkov where 3=3 and ido >= '2023.06.21 00:00:00' and ido <= '2023.08.29 20:41:00' and hely = '59'";	
+			
 			String sql2 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
@@ -114,7 +124,7 @@ public class SQL
 			datatable3 = new DataTable();
 			datatable4 = new DataTable();
 			workbook = new Workbook();
-			workbook.setVersion(ExcelVersion.Version2013); 
+			workbook.setVersion(ExcelVersion.Version2016); 
 			jdbcAdapter = new JdbcAdapter();
 			jdbcAdapter2 = new JdbcAdapter();
 			jdbcAdapter3 = new JdbcAdapter();
@@ -367,8 +377,23 @@ public class SQL
 					+ "videoton.fkov.dolgozo \n"
 					+ "from	videoton.fkov \n"
 					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
-					+ " where " + osszefuzott +"";
-			
+					+ " where " + osszefuzott +" and hely = '50'";
+			/*
+			String sql = "select videoton.fkov.*\r\n"
+					+ "from \r\n"
+					+ "(select videoton.fkov.ido\r\n"
+					+ "from videoton.fkov\r\n"
+					+ "-- inner join	fkovsor on fkovsor.azon = fkov.hely\r\n"
+					+ "where 3=3\r\n"
+					+ "and " + osszefuzott +"\r\n"
+					+ "and videoton.fkov.hely = '50') belso,\r\n"
+					+ "videoton.fkov\r\n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely\r\n"
+					+ "\r\n"
+					+ "where 3 = 3\r\n"
+					+ "and fkov.ido = belso.ido\r\n"
+					+ "";
+			*/
 			cstmt.execute(sql);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 			
 			result = cstmt.getResultSet();
@@ -376,7 +401,7 @@ public class SQL
 			datatable = new DataTable();
 			
 			workbook = new Workbook();
-			workbook.setVersion(ExcelVersion.Version2013); 
+			workbook.setVersion(ExcelVersion.Version2016); 
 			jdbcAdapter = new JdbcAdapter();
 			
 			jdbcAdapter.fillDataTable(datatable, result);
@@ -384,6 +409,18 @@ public class SQL
 			//Get the first worksheet
 			Worksheet sheet = workbook.getWorksheets().get(0);
 			sheet.insertDataTable(datatable, true, 1, 1);
+			/*int cellaszam = 1;
+			sheet.getRange().get("A" + cellaszam).setText("Hely");
+			sheet.getRange().get("B" + cellaszam).setText("Idő");
+			sheet.getRange().get("C" + cellaszam).setText("Panel");
+			cellaszam++;
+			while(result.next())
+			{
+				sheet.getRange().get("A" + cellaszam).setText(result.getString(2));
+				sheet.getRange().get("B" + cellaszam).setText(result.getString(3));
+				sheet.getRange().get("C" + cellaszam).setText(result.getString(4));
+				cellaszam++;
+			}*/
 			sheet.getAutoFilters().setRange(sheet.getCellRange("A1:P1"));
 			sheet.getAllocatedRange().autoFitColumns();
 			sheet.getAllocatedRange().autoFitRows();
