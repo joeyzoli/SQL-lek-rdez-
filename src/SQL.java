@@ -20,9 +20,9 @@ import com.spire.xls.Worksheet;
 public class SQL 
 {
 	private ResultSet result;
-	private ResultSet result2;
-	private ResultSet result3;
-	private ResultSet result4;
+	//private ResultSet result2;
+	//private ResultSet result3;
+	//private ResultSet result4;
 	private JdbcAdapter jdbcAdapter;
 	private JdbcAdapter jdbcAdapter2;
 	private JdbcAdapter jdbcAdapter3;
@@ -43,34 +43,32 @@ public class SQL
 			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());														//jdbc mysql driver meghÃ­vÃ¡sa
 				
 			//Getting the connection
-			String mysqlUrl = "jdbc:mysql://192.168.5.145/";																		//mysql szerver ipcÃ­mÃ©hez valÃ³ csatlakozÃ¡s
-			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszÃ³ felhasznÃ¡lÃ³ nÃ©vvel
+			String mysqlUrl = "jdbc:mysql://172.20.22.6/";																		//mysql szerver ipcÃ­mÃ©hez valÃ³ csatlakozÃ¡s  172.20.22.6
+			con = DriverManager.getConnection(mysqlUrl, "quality", "Qua25!");											//a megadott ip-re csatlakozik a jelszÃ³ felhasznÃ¡lÃ³ nÃ©vvel "quality", "Qua25!"
 			System.out.println("Connection established......");
 			
 			//SQL_lekerdezo.progressBar.setValue(10);
 			//Preparing a CallableStatement to call a procedure
 			// CallableStatement cstmt = con.prepareCall("{call videoton.veas_avmheti_teszt(?)}");
 			
+			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
+					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
+					+ "if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod), videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
+					+ "videoton.fkov.dolgozo \n"
+					+ "from videoton.fkov  \n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely "
+					+ "left join videoton.FKOVADAT on videoton.FKOVADAT.FKOV = videoton.fkov.azon "					
+					+ " where panel in (" + osszefuzott +") ";
+			
 			/*String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
-					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
+					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
 					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from	videoton.fkov \n"
 					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
-					+ " where panel in (" + osszefuzott +") and hely = '50'";*/
-			
-			//String sql = "select * from videoton.fkovadat where fkov in ("+ osszefuzott +")";
-			// String sql = "SELECT * FROM videoton.kov where panel  in ("+ osszefuzott +")";					//alaktrész beépülés
-			/*String sql = "select *\r\n"
-					+ "from videoton.fkov\r\n"
-					+ "inner join	fkovsor on fkovsor.azon = fkov.hely\r\n"
-					+ "where 3=3\r\n"
-					+ "and ido in ('2023.07.14 05:27:50','2023.07.14 09:12:19','2023.07.14 09:12:50','2023.07.22 05:47:36','2023.07.22 07:25:32','2023.08.11 14:54:48','2023.08.11 14:56:39','2023.08.11 14:57:17',\r\n"
-					+ "'2023.08.11 14:58:31','2023.08.11 15:00:24','2023.08.11 15:01:01','2023.08.15 14:39:47','2023.08.15 14:40:24','2023.08.15 14:41:02','2023.08.15 14:50:00','2023.08.15 14:51:14',\r\n"
-					+ "'2023.08.15 14:51:52', '2023.08.15 14:52:29','2023.08.15 14:53:06','2023.08.15 14:53:44','2023.08.15 14:54:22')\r\n"
-					+ "and hely = '50'";*/
-			String sql = "select * from videoton.fkov where 3=3 and ido >= '2023.06.21 00:00:00' and ido <= '2023.08.29 20:41:00' and hely = '59'";	
+					+ " where ido in (" + osszefuzott +") ";
 			
 			String sql2 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
@@ -80,30 +78,61 @@ public class SQL
 					+ "from	videoton.fkov \n"
 					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
 					+ " where panel in (" + osszefuzott2 +")";
+			/*String sql = "select Fkov, ExtractValue(adat, '//current_EM2_value') from videoton.FKOVADAT \r\n"
+					+ "WHERE 3 = 3\r\n"
+					+ "and FKOV in ("+ osszefuzott +")";*/
+			//String sql = "SELECT * FROM videoton.kov where panel  in ("+ osszefuzott +")";					//alaktrész beépülés
+			//String sql = "select * from videoton.fkovavm WHERE panel in ("+ osszefuzott +")";					//Firmware keresés
+			/*String sql = "select *\r\n"
+					+ "from videoton.fkov\r\n"
+					+ "inner join	fkovsor on fkovsor.azon = fkov.hely\r\n"
+					+ "where 3=3\r\n"
+					+ "and ido in ('2023.07.14 05:27:50','2023.07.14 09:12:19','2023.07.14 09:12:50','2023.07.22 05:47:36','2023.07.22 07:25:32','2023.08.11 14:54:48','2023.08.11 14:56:39','2023.08.11 14:57:17',\r\n"
+					+ "'2023.08.11 14:58:31','2023.08.11 15:00:24','2023.08.11 15:01:01','2023.08.15 14:39:47','2023.08.15 14:40:24','2023.08.15 14:41:02','2023.08.15 14:50:00','2023.08.15 14:51:14',\r\n"
+					+ "'2023.08.15 14:51:52', '2023.08.15 14:52:29','2023.08.15 14:53:06','2023.08.15 14:53:44','2023.08.15 14:54:22')\r\n"
+					+ "and hely = '50'";*/
+			//String sql = "select * from videoton.fkov where 3=3 and ido >= '2023.06.21 00:00:00' and ido <= '2023.08.29 20:41:00' and hely = '59'";
+			
+			//String sql = "select * from videoton.fkov where 3=3 and ido in("+ osszefuzott +") and hely = '50'";
+			
+			String sql2 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
+					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
+					+ "if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod), videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
+					+ "videoton.fkov.dolgozo \n"
+					+ "from videoton.fkov  \n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely "
+					+ "left join videoton.FKOVADAT on videoton.FKOVADAT.FKOV = videoton.fkov.azon "					
+					+ " where panel in (" + osszefuzott2 +") ";
+			/*String sql2 = "select Fkov, ExtractValue(adat, '//current_EM2_value') from videoton.FKOVADAT \r\n"
+					+ "WHERE 3 = 3\r\n"
+					+ "and FKOV in ("+ osszefuzott2 +")";*/
 			
 			String sql3 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
-					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
-					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
+					+ "if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod), videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
-					+ "from	videoton.fkov \n"
-					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
-					+ " where panel in (" + osszefuzott3 +")";
+					+ "from videoton.fkov  \n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely "
+					+ "left join videoton.FKOVADAT on videoton.FKOVADAT.FKOV = videoton.fkov.azon "					
+					+ " where panel in (" + osszefuzott3 +") ";
 			
 			String sql4 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
-					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny, "
-					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
+					+ "if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod), videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
-					+ "from	videoton.fkov \n"
-					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely \n"
-					+ " where panel in (" + osszefuzott4 +")";
+					+ "from videoton.fkov  \n"
+					+ "inner join videoton.fkovsor on videoton.fkovsor.azon = videoton.fkov.hely "
+					+ "left join videoton.FKOVADAT on videoton.FKOVADAT.FKOV = videoton.fkov.azon "					
+					+ " where panel in (" + osszefuzott4 +") ";
 			
 			Statement cstmt = con.createStatement(
 	                ResultSet.TYPE_SCROLL_INSENSITIVE,
 	                ResultSet.CONCUR_UPDATABLE);
 			
-			Statement cstmt2 = con.createStatement(
+			/*Statement cstmt2 = con.createStatement(
 	                ResultSet.TYPE_SCROLL_INSENSITIVE,
 	                ResultSet.CONCUR_UPDATABLE);
 			
@@ -113,12 +142,13 @@ public class SQL
 			
 			Statement cstmt4 = con.createStatement(
 	                ResultSet.TYPE_SCROLL_INSENSITIVE,
-	                ResultSet.CONCUR_UPDATABLE);
+	                ResultSet.CONCUR_UPDATABLE);*/
 			
+			System.out.println("Kezdődik");
 			cstmt.execute(sql);																										//sql llekérdezés futtatása
 			
 			result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
-			
+			System.out.println("Lefutott");
 			datatable = new DataTable();
 			datatable2 = new DataTable();
 			datatable3 = new DataTable();
@@ -131,7 +161,7 @@ public class SQL
 			jdbcAdapter4 = new JdbcAdapter();
 
 			jdbcAdapter.fillDataTable(datatable, result);
-			
+			System.out.println("datatabléban");
 			//Get the first worksheet
 			Worksheet sheet = workbook.getWorksheets().get(0);
 			sheet.insertDataTable(datatable, true, 1, 1);
@@ -145,11 +175,11 @@ public class SQL
 			
 			if(osszefuzott2 != "")
         	{
-				cstmt2.execute(sql2);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
+				cstmt.execute(sql2);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 				
-				result2 = cstmt2.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
+				result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 				
-				jdbcAdapter2.fillDataTable(datatable2, result2);
+				jdbcAdapter2.fillDataTable(datatable2, result);
 				//Get the first worksheet
 				Worksheet sheet2 = workbook.getWorksheets().get(1);
 				sheet2.insertDataTable(datatable2, true, 1, 1);
@@ -170,11 +200,11 @@ public class SQL
 			
 			if(osszefuzott3 != "")
         	{
-				cstmt3.execute(sql3);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
+				cstmt.execute(sql3);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
 
-				result3 = cstmt3.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
+				result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak
 				
-				jdbcAdapter3.fillDataTable(datatable3, result3);
+				jdbcAdapter3.fillDataTable(datatable3, result);
 				//Get the first worksheet
 				Worksheet sheet3 = workbook.getWorksheets().get(1);
 				sheet3.insertDataTable(datatable3, true, 1, 1);
@@ -195,32 +225,33 @@ public class SQL
 			
 			if(osszefuzott4 != "")
         	{
-				cstmt4.execute(sql4);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
-				result4 = cstmt4.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak				
-				jdbcAdapter4.fillDataTable(datatable4, result4);
+				cstmt.execute(sql4);																										//sql lejkÃ©rdezÃ©s futtatÃ¡sa
+				result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak				
+				jdbcAdapter4.fillDataTable(datatable4, result);
 				//Get the first worksheet
-				Worksheet sheet3 = workbook.getWorksheets().get(0);
-				sheet3.insertDataTable(datatable4, true, 1, 1);
-				sheet3.getAutoFilters().setRange(sheet3.getCellRange("A1:P1"));
-				sheet3.getAllocatedRange().autoFitColumns();
-				sheet3.getAllocatedRange().autoFitRows();
+				Worksheet sheet4 = workbook.getWorksheets().get(1);
+				sheet4.insertDataTable(datatable4, true, 1, 1);
+				sheet4.getAutoFilters().setRange(sheet4.getCellRange("A1:P1"));
+				sheet4.getAllocatedRange().autoFitColumns();
+				sheet4.getAllocatedRange().autoFitRows();
 				    
-				sheet3.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
+				sheet4.getCellRange("A1:Z1").getCellStyle().getExcelFont().isBold(true);                          // fÃ©lkÃ¶vÃ©r beÃ¡llÃ­tÃ¡s
 				
 				System.out.println("Negyedik SQL");
 				
 				int a = workbook.getWorksheets().get(0).getLastRow();
 				int b = workbook.getWorksheets().get(0).getLastColumn();
 				
-				sheet3.getCellRange(2, 1, a, b).copy(sheet.getCellRange(sheet.getLastRow()+1, 1, a + sheet.getLastRow(), b));
+				sheet4.getCellRange(2, 1, a, b).copy(sheet.getCellRange(sheet.getLastRow()+1, 1, a + sheet.getLastRow(), b));
 				//sheet3.remove();
         	}
+			System.out.println("Excelbe másolva");
 			result.close();
 			cstmt.close();
 			con.close();
 			workbook.setActiveSheetIndex(0); 
 			workbook.saveToFile(menteshelye.getAbsolutePath(), ExcelVersion.Version2016);
-			
+			System.out.println("Excel mentve");
 			FileInputStream fileStream = new FileInputStream(menteshelye.getAbsolutePath());
 			try (XSSFWorkbook workbook = new XSSFWorkbook(fileStream)) 
 			{
