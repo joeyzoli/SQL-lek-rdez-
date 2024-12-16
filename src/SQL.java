@@ -53,7 +53,7 @@ public class SQL
 			
 			String sql = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
-					+ "if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod), videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from videoton.fkov  \n"
@@ -97,7 +97,7 @@ public class SQL
 			
 			String sql2 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
-					+ "if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod), videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from videoton.fkov  \n"
@@ -106,11 +106,11 @@ public class SQL
 					+ " where panel in (" + osszefuzott2 +") ";
 			/*String sql2 = "select Fkov, ExtractValue(adat, '//current_EM2_value') from videoton.FKOVADAT \r\n"
 					+ "WHERE 3 = 3\r\n"
-					+ "and FKOV in ("+ osszefuzott2 +")";*/
+					+ "and FKOV in ("+ osszefuzott2 +")";   if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod)*/
 			
 			String sql3 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
-					+ "if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod), videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from videoton.fkov  \n"
@@ -120,7 +120,7 @@ public class SQL
 			
 			String sql4 = "select 	videoton.fkov.azon, videoton.fkov.hely,videoton.fkovsor.nev, videoton.fkov.ido, videoton.fkov.panel, cast(videoton.fkov.alsor as char(5)) as Teszterszam,"
 					+ "if(videoton.fkov.ok in ('-1', '1'), \"Rendben\", \"Hiba\") as eredmeny,"
-					+ "if(videoton.fkov.hibakod = '(XML)', videoton.FKOVADAT.adat,  videoton.fkov.hibakod), videoton.fkov.kod2, videoton.fkov.torolt, "
+					+ "videoton.fkov.hibakod, videoton.fkov.kod2, videoton.fkov.torolt, "
 					+ "videoton.fkov.szeriaszam, videoton.fkov.tesztszam, videoton.fkov.poz, videoton.fkov.teljesszam, videoton.fkov.failtestnames, videoton.fkov.error,"
 					+ "videoton.fkov.dolgozo \n"
 					+ "from videoton.fkov  \n"
@@ -229,7 +229,7 @@ public class SQL
 				result = cstmt.getResultSet();																								//az sql lekÃ©rdezÃ©s tartalmÃ¡t odaadja egy result set vÃ¡ltozÃ³nak				
 				jdbcAdapter4.fillDataTable(datatable4, result);
 				//Get the first worksheet
-				Worksheet sheet4 = workbook.getWorksheets().get(1);
+				Worksheet sheet4 = workbook.getWorksheets().get(0);
 				sheet4.insertDataTable(datatable4, true, 1, 1);
 				sheet4.getAutoFilters().setRange(sheet4.getCellRange("A1:P1"));
 				sheet4.getAllocatedRange().autoFitColumns();
